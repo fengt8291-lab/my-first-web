@@ -3,21 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的第一个网站</title>
+    <title>我的未来产品 - 让工作更高效</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
-        .card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        h1 { color: #333; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 20px;}
-        button:hover { background-color: #0056b3; }
+        /* 全局样式重置与字体 */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { line-height: 1.6; color: #333; background-color: #f9fafb; }
+        
+        /* 导航栏 */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #2563eb; }
+        .nav-links a { text-decoration: none; color: #666; margin-left: 20px; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: #2563eb; }
+
+        /* 核心区域 (Hero Section) */
+        header { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 6rem 20px; background: white; }
+        h1 { font-size: 3rem; margin-bottom: 1.5rem; color: #111827; line-height: 1.2; }
+        .subtitle { font-size: 1.25rem; color: #4b5563; max-width: 600px; margin-bottom: 2.5rem; }
+        .cta-button { background-color: #2563eb; color: white; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: transform 0.2s, box-shadow 0.2s; }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
+
+        /* 特性展示区 */
+        .features { padding: 5rem 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
+        .feature-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); }
+        .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .feature-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .feature-desc { color: #6b7280; }
+
+        /* 页脚 */
+        footer { text-align: center; padding: 2rem; background: white; margin-top: 4rem; color: #9ca3af; font-size: 0.9rem; }
+        
+        /* 手机端适配 */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            header { padding: 4rem 20px; }
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>🎉 恭喜你，网站搭建成功！</h1>
-        <p>这是你使用 VS Code 和 Git 推送的第一个页面。</p>
-        <p>盈利之旅，从此开始。</p>
-        <button onclick="alert('未来会在这里接入支付功能！')">点击我</button>
-    </div>
+
+    <!-- 顶部导航 -->
+    <nav>
+        <div class="logo">MyBrand</div>
+        <div class="nav-links">
+            <a href="#">首页</a>
+            <a href="#">功能</a>
+            <a href="#">关于</a>
+        </div>
+    </nav>
+
+    <!-- 核心标题区 -->
+    <header>
+        <h1>把你的想法<br>变成现实的产品</h1>
+        <p class="subtitle">我们提供最简单、最高效的工具，帮助你快速搭建属于你的数字资产，开始你的盈利之旅。</p>
+        <a href="#" class="cta-button">立即开始 - 免费试用</a>
+    </header>
+
+    <!-- 特性卡片区 -->
+    <section class="features">
+        <div class="feature-card">
+            <div class="icon">🚀</div>
+            <div class="feature-title">极速部署</div>
+            <div class="feature-desc">无需复杂配置，一键生成你的专属网站，让创意立刻上线。</div>
+        </div>
+        <div class="feature-card">
+            <div class="icon">🛡️</div>
+            <div class="feature-title">安全稳定</div>
+            <div class="feature-desc">企业级的数据安全保障，全天候稳定运行，让你无后顾之忧。</div>
+        </div>
+        <div class="feature-card">
+            <div class="icon">💰</div>
+            <div class="feature-title">变现无忧</div>
+            <div class="feature-desc">内置多种支付与营销工具，助你从第一天开始创造收益。</div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        &copy; 2023 MyBrand Inc. 保留所有权利.
+    </footer>
+
 </body>
 </html>

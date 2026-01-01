@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我为什么要建立这个个人网站？</title>
+    <style>
+        /* 复用全局样式 */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { line-height: 1.8; color: #333; background-color: #f9fafb; }
+        
+        /* 导航栏 */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #2563eb; }
+        .nav-links a { text-decoration: none; color: #666; margin-left: 20px; font-weight: 500; }
+        .nav-links a:hover { color: #2563eb; }
+        
+        /* 文章内容容器 */
+        .article-container { max-width: 800px; margin: 3rem auto; padding: 0 20px; }
+        .article-header { text-align: center; margin-bottom: 2rem; }
+        .article-date { color: #9ca3af; font-size: 0.9rem; }
+        .article-title { font-size: 2rem; margin: 1rem 0; color: #111827; }
+        .article-content { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .article-content p { margin-bottom: 1.5rem; font-size: 1.05rem; color: #374151; }
+        .article-content h2 { margin: 2rem 0 1rem; color: #1f2937; }
+        
+        /* 返回按钮 */
+        .back-button { display: inline-block; margin: 2rem 0; padding: 10px 25px; background: #e5e7eb; color: #374151; text-decoration: none; border-radius: 6px; transition: background 0.3s; }
+        .back-button:hover { background: #d1d5db; }
+        
+        /* 手机端适配 */
+        @media (max-width: 768px) {
+            .article-title { font-size: 1.5rem; }
+            .article-content { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部导航（和首页一样，方便返回） -->
+    <nav>
+        <div class="logo">MyBrand</div>
+        <div class="nav-links">
+            <a href="index.html">返回首页</a>
+        </div>
+    </nav>
+
+    <!-- 文章主体 -->
+    <div class="article-container">
+        <div class="article-header">
+            <span class="article-date">2023-10-27</span>
+            <h1 class="article-title">我为什么要建立这个个人网站？</h1>
+        </div>
+
+        <article class="article-content">
+            <p>
+                在这个信息爆炸的时代，拥有一个属于自己的角落显得尤为珍贵。这不仅仅是一个技术练习场，更是我记录成长、分享思考的窗口。
+            </p>
+
+            <p>
+                很多人问我，为什么要从零开始建网站，而不是直接用现成的博客平台？我的答案很简单：<strong>因为我想完全掌控我的数字资产</strong>。
+            </p>
+
+            <h2>完全的掌控权</h2>
+            <p>
+                当你使用第三方平台时，你的内容实际上存储在别人的服务器上。平台可能随时改变规则、甚至关闭服务。但当你拥有自己的网站时，所有的代码、所有的内容都由你自己掌握。
+            </p>
+
+            <h2>技术成长的加速器</h2>
+            <p>
+                从最基础的 HTML、CSS，到之后的 JavaScript、后端开发，每一个功能都是我亲手实现的。这种"全栈"的学习路径，让我对整个互联网的运作机制有了更深入的理解。
+            </p>
+
+            <h2>与世界对话的窗口</h2>
+            <p>
+                这个网站不仅仅是一个技术展示台，更是一个与世界对话的平台。在这里，我可以分享我的游戏开发心得、展示我的设计作品、记录我的学习旅程。
+            </p>
+
+            <p>
+                欢迎来到我的世界。希望这里的内容能给你带来一些启发，也期待与你在技术的道路上相遇！
+            </p>
+        </article>
+
+        <!-- 返回首页按钮 -->
+        <a href="index.html" class="back-button">← 返回首页</a>
+    </div>
+
+</body>
+</html>

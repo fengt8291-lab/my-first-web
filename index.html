@@ -38,43 +38,114 @@
             h1 { font-size: 2rem; }
             header { padding: 4rem 20px; }
         }
+
+        /* --- 博客板块样式 --- */
+        .container { max-width: 1000px; margin: 0 auto; padding: 4rem 20px; }
+        .section-title { text-align: center; font-size: 2rem; margin-bottom: 3rem; color: #111827; }
+
+        /* 关于我 & 博客的左右布局 */
+        .about-blog-wrapper { display: flex; gap: 4rem; align-items: flex-start; }
+        .profile-card { flex: 1; text-align: center; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .avatar { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 1rem; object-fit: cover; border: 3px solid #2563eb; }
+        .profile-name { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .profile-bio { color: #666; font-size: 0.95rem; margin-bottom: 1rem; }
+
+        /* 博客文章列表 */
+        .blog-section { flex: 2; }
+        .post-item { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: transform 0.2s; }
+        .post-item:hover { transform: translateX(5px); }
+        .post-date { font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.5rem; display: block; }
+        .post-title { font-size: 1.25rem; margin-bottom: 0.5rem; color: #1f2937; }
+        .post-excerpt { color: #4b5563; font-size: 0.95rem; line-height: 1.6; }
+        .read-more { color: #2563eb; text-decoration: none; font-weight: 500; font-size: 0.9rem; display: inline-block; margin-top: 0.5rem; }
+        .read-more:hover { text-decoration: underline; }
+
+        /* 手机端适配：变成上下排列 */
+        @media (max-width: 768px) {
+            .about-blog-wrapper { flex-direction: column; }
+        }
+
+        
     </style>
 </head>
 <body>
 
     <!-- 顶部导航 -->
     <nav>
-        <div class="logo">MyBrand</div>
         <div class="nav-links">
-            <a href="#">首页</a>
-            <a href="#">功能</a>
-            <a href="#">关于</a>
+            <a href="#home">首页</a>
+            <a href="#games">游戏</a>
+            <a href="#designs">设计</a>
+            <a href="#blog">日志</a>
         </div>
     </nav>
 
     <!-- 核心标题区 -->
     <header>
-        <h1>把你的想法<br>变成现实的产品</h1>
-        <p class="subtitle">我们提供最简单、最高效的工具，帮助你快速搭建属于你的数字资产，开始你的盈利之旅。</p>
+        <h1>代码 & 设计<br>创造无限可能</h1>
+        <p class="subtitle">欢迎来到我的数字花园。这里收录我的小游戏、UI设计作品以及编程路上的思考。</p>
         <a href="#" class="cta-button">立即开始 - 免费试用</a>
     </header>
 
     <!-- 特性卡片区 -->
     <section class="features">
         <div class="feature-card">
-            <div class="icon">🚀</div>
-            <div class="feature-title">极速部署</div>
-            <div class="feature-desc">无需复杂配置，一键生成你的专属网站，让创意立刻上线。</div>
+            <div class="icon">🎮</div>
+            <div class="feature-title">Web 小游戏</div>
+            <div class="feature-desc">我开发的 HTML5 游戏集合。无聊的时候来玩一把，或者直接拿源码去学习。</div>
         </div>
         <div class="feature-card">
-            <div class="icon">🛡️</div>
-            <div class="feature-title">安全稳定</div>
-            <div class="feature-desc">企业级的数据安全保障，全天候稳定运行，让你无后顾之忧。</div>
+            <div class="icon">🎨</div>
+            <div class="feature-title">设计工坊</div>
+            <div class="feature-desc">展示我的 UI/UX 设计作品、海报创意以及 Figma 设计源文件的分享。</div>
         </div>
         <div class="feature-card">
-            <div class="icon">💰</div>
-            <div class="feature-title">变现无忧</div>
-            <div class="feature-desc">内置多种支付与营销工具，助你从第一天开始创造收益。</div>
+            <div class="icon">💎</div>
+            <div class="feature-title">资源 & 合作</div>
+            <div class="feature-desc">精选的程序员必备工具推荐，以及承接网站开发、定制设计的服务入口。</div>
+        </div>
+    </section>
+
+    <!-- 关于我 & 博客板块 -->
+    <section class="container">
+        <h2 class="section-title">关于我 & 日志</h2>
+        
+        <div class="about-blog-wrapper">
+            <!-- 左侧：个人简介 -->
+            <div class="profile-card">
+                <!-- 这里的图片是一个随机生成的头像，你可以换成你自己的照片链接 -->
+                <img src="E:\my-first-web\images\avatar.jpg" alt="Avatar" class="avatar">
+                <div class="profile-name">Feng</div>
+                <p class="profile-bio">全栈开发练习生 | 游戏爱好者 | 终身学习者</p>
+                <p style="font-size: 0.9rem; color: #555;">
+                    这里是我的数字花园。我热衷于用代码构建有趣的工具，用设计描绘未来的模样。欢迎通过博客了解我的最新动态！
+                </p>
+            </div>
+
+            <!-- 右侧：博客列表 -->
+            <div class="blog-section">
+                
+                <!-- 文章 1 -->
+                <article class="post-item">
+                    <span class="post-date">2023-10-27</span>
+                    <h3 class="post-title">我为什么要建立这个个人网站？</h3>
+                    <p class="post-excerpt">
+                        在这个信息爆炸的时代，拥有一个属于自己的角落显得尤为珍贵。这不仅仅是一个技术练习场，更是我记录成长、分享思考的窗口。欢迎来到我的世界...
+                    </p>
+                    <a href="post1.html" class="read-more">阅读全文 &rarr;</a>
+                </article>
+
+                <!-- 文章 2 (占位) -->
+                <article class="post-item">
+                    <span class="post-date">2023-10-26</span>
+                    <h3 class="post-title">Hello World：我的编程之路开始了</h3>
+                    <p class="post-excerpt">
+                        虽然我现在还只会基础的 HTML 和 CSS，但我相信积跬步以至千里。这个网站的第一行代码，是我迈向未来的第一步。
+                    </p>
+                    <a href="#" class="read-more">阅读全文 &rarr;</a>
+                </article>
+
+            </div>
         </div>
     </section>
 

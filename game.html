@@ -87,47 +87,110 @@
 
     <!-- JavaScript 脚本区域：这是让网页动起来的核心 -->
     <script>
-        // 1. 初始化变量（就像准备几个空盒子）
+           // --- 游戏核心逻辑 ---
+
         let score = 0;
-        // 从浏览器的“本地仓库”里读取最高分，如果是空的（null），就默认为 0
         let highScore = localStorage.getItem('myGameHighScore') || 0;
+        let timeLeft = 10;       // 倒计时时间（秒）
+        let gameActive = false;  // 游戏状态：false=还没开始/结束了, true=正在玩
+        let timerId = null;      // 定时器的ID（用来关闭闹钟）
 
-        // 2. 抓取网页上的元素（就像在现实里抓住那个物体）
-        const scoreDisplay = document.getElementById('score');       // 抓住分数显示的数字
-        const highScoreDisplay = document.getElementById('highScore'); // 抓住最高分显示
-        const clickBtn = document.getElementById('clickBtn');         // 抓住那个大按钮
-        const resetBtn = document.getElementById('resetBtn');         // 抓住重置按钮
+        // 抓取元素
+        const scoreDisplay = document.getElementById('score');
+        const highScoreDisplay = document.getElementById('highScore');
+        const clickBtn = document.getElementById('clickBtn');
+        const resetBtn = document.getElementById('resetBtn');
 
-        // 3. 游戏开始前，先更新一下显示的数字
+        // 初始化显示
         updateDisplay();
 
-        // 4. 添加“监听器”（就像雇个保安盯着按钮）
-        // 当 clickBtn 被点击时，执行后面那个函数
+        // --- 核心事件：点击按钮 ---
         clickBtn.addEventListener('click', () => {
-            score++; // 分数加 1 (等同于 score = score + 1)
+            // 1. 如果游戏还没开始（是第一次点击），则启动游戏
+            if (!gameActive) {
+                startGame();
+            }
+
+            // 2. 如果游戏正在进行，加分
+            if (gameActive) {
+                score++;
+                updateDisplay();
+            }
+        });
+
+        // --- 核心功能：开始游戏 ---
+        function startGame() {
+            gameActive = true;      // 标记为“游戏中”
+            timeLeft = 10;           // 重置时间
+            score = 0;               // 重置分数
+            clickBtn.innerText = "狂点我！！！"; // 改变按钮文字提示玩家开始
+            clickBtn.style.backgroundColor = "#ef4444"; // 按钮变红，营造紧张感
+
+            updateDisplay();
+
+            // 【关键】设置一个定时器，每1000毫秒（1秒）执行一次
+            timerId = setInterval(() => {
+                timeLeft--; // 时间减1
+                
+                // 改变标题来显示倒计时
+                document.querySelector('h1').innerText = `⏳ 剩余时间: ${timeLeft} 秒`;
+
+                // 如果时间到了
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // --- 核心功能：结束游戏 ---
+        function endGame() {
+            clearInterval(timerId); // 停止闹钟（如果不写这句，闹钟会一直响）
+            gameActive = false;     // 标记为“游戏结束”
             
-            // 如果当前分数超过了最高分
+            // 恢复标题
+            document.querySelector('h1').innerText = "⏰ 时间到！";
+            
+            // 按钮变灰，并提示不可点击
+            clickBtn.disabled = true;
+            clickBtn.innerText = "时间到！点重置再来";
+            clickBtn.style.backgroundColor = "#94a3b8"; 
+            
+            // 检查最高分
             if (score > highScore) {
                 highScore = score;
-                // 把新的最高分存进浏览器的“本地仓库”，这样刷新也不会丢
                 localStorage.setItem('myGameHighScore', highScore);
+                alert(`🎉 恭喜！新纪录：${score} 分！`);
+            } else {
+                alert(`游戏结束！你的得分：${score}`);
             }
             
-            // 更新屏幕上的数字
             updateDisplay();
-        });
-
-        // 监听重置按钮
-        resetBtn.addEventListener('click', () => {
-            score = 0;
-            updateDisplay();
-        });
-
-        // 5. 定义一个专门用来更新显示的函数（避免代码重复）
-        function updateDisplay() {
-            scoreDisplay.innerText = score;         // 改变中间的大数字
-            highScoreDisplay.innerText = highScore; // 改变顶部的小数字
         }
+
+        // --- 重置按钮事件 ---
+        resetBtn.addEventListener('click', () => {
+            // 如果正在游戏中点重置，先停止定时器
+            clearInterval(timerId);
+            
+            // 恢复初始状态
+            score = 0;
+            timeLeft = 10;
+            gameActive = false;
+            
+            clickBtn.innerText = "点我！点我！"; // 恢复按钮文字
+            clickBtn.style.backgroundColor = "#0ea5e9"; // 恢复蓝色
+            document.querySelector('h1').innerText = "🚀 极速点击挑战"; // 恢复标题
+            clickBtn.disabled = false;
+            
+            updateDisplay();
+        });
+
+        // 更新显示的辅助函数
+        function updateDisplay() {
+            scoreDisplay.innerText = score;
+            highScoreDisplay.innerText = highScore;
+        }
+
     </script>
 
 </body>

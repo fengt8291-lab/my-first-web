@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极速点击挑战</title>
+    <style>
+        /* CSS 样式区域 */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body {
+            background-color: #f0f9ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* 撑满全屏 */
+            text-align: center;
+        }
+
+        .game-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 { color: #0ea5e9; margin-bottom: 1rem; }
+        
+        .score-board {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #334155;
+            margin: 1rem 0;
+        }
+
+        .high-score {
+            font-size: 1rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        /* 游戏按钮样式 */
+        #clickBtn {
+            background-color: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 4px 0 #0284c7; /* 按钮底部的立体感 */
+        }
+
+        #clickBtn:active {
+            transform: translateY(4px); /* 按下去时的位移 */
+            box-shadow: 0 0 0 #0284c7; /* 按下去阴影消失 */
+        }
+
+        .reset-btn {
+            margin-top: 2rem;
+            background: none;
+            border: 1px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #64748b;
+        }
+        .reset-btn:hover { background: #f1f5f9; }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>🚀 极速点击挑战</h1>
+        <div class="high-score">历史最高分: <span id="highScore">0</span></div>
+        <div class="score-board" id="score">0</div>
+        
+        <!-- 按钮：点击事件会在 JS 里定义 -->
+        <button id="clickBtn">点我！点我！</button>
+
+        <br>
+        <button class="reset-btn" id="resetBtn">重置分数</button>
+    </div>
+
+    <!-- JavaScript 脚本区域：这是让网页动起来的核心 -->
+    <script>
+        // 1. 初始化变量（就像准备几个空盒子）
+        let score = 0;
+        // 从浏览器的“本地仓库”里读取最高分，如果是空的（null），就默认为 0
+        let highScore = localStorage.getItem('myGameHighScore') || 0;
+
+        // 2. 抓取网页上的元素（就像在现实里抓住那个物体）
+        const scoreDisplay = document.getElementById('score');       // 抓住分数显示的数字
+        const highScoreDisplay = document.getElementById('highScore'); // 抓住最高分显示
+        const clickBtn = document.getElementById('clickBtn');         // 抓住那个大按钮
+        const resetBtn = document.getElementById('resetBtn');         // 抓住重置按钮
+
+        // 3. 游戏开始前，先更新一下显示的数字
+        updateDisplay();
+
+        // 4. 添加“监听器”（就像雇个保安盯着按钮）
+        // 当 clickBtn 被点击时，执行后面那个函数
+        clickBtn.addEventListener('click', () => {
+            score++; // 分数加 1 (等同于 score = score + 1)
+            
+            // 如果当前分数超过了最高分
+            if (score > highScore) {
+                highScore = score;
+                // 把新的最高分存进浏览器的“本地仓库”，这样刷新也不会丢
+                localStorage.setItem('myGameHighScore', highScore);
+            }
+            
+            // 更新屏幕上的数字
+            updateDisplay();
+        });
+
+        // 监听重置按钮
+        resetBtn.addEventListener('click', () => {
+            score = 0;
+            updateDisplay();
+        });
+
+        // 5. 定义一个专门用来更新显示的函数（避免代码重复）
+        function updateDisplay() {
+            scoreDisplay.innerText = score;         // 改变中间的大数字
+            highScoreDisplay.innerText = highScore; // 改变顶部的小数字
+        }
+    </script>
+
+</body>
+</html>

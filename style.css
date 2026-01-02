@@ -11,7 +11,7 @@
 }
 
 /* 夜间模式 */
-html.dark {
+[data-theme="dark"] {
     --bg-color: #0f172a;
     --text-color: #f1f5f9;
     --card-bg: #1e293b;

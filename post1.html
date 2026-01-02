@@ -140,26 +140,41 @@
         <a href="index.html" class="back-button">← 返回首页</a>
     </div>
 
-    <script>
+        <script>
         const toggleBtn = document.getElementById('themeToggle');
         const htmlEl = document.documentElement;
 
-        // 检查存储
-        if (localStorage.getItem('siteTheme') === 'dark') {
-            htmlEl.classList.add('dark');
-            toggleBtn.innerText = "☀️ 亮起来";
+        // 👇 1. 初始化：读取存储的主题 (注意键名改为 'theme'，与博客保持一致)
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlEl.setAttribute('data-theme', savedTheme);
+
+        // 👇 2. 根据当前主题设置按钮文字
+        if (savedTheme === 'dark') {
+            toggleBtn.innerText = "☀️ 模式"; // 亮起来
+        } else {
+            toggleBtn.innerText = "🌙 模式"; // 变暗
         }
 
-        // 绑定点击事件
-        if (toggleBtn) { // 多加个保险，防止找不到按钮报错
+        // 👇 3. 绑定点击事件
+        if (toggleBtn) { 
             toggleBtn.addEventListener('click', () => {
-                htmlEl.classList.toggle('dark');
-                const isDark = htmlEl.classList.contains('dark');
-                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
-                toggleBtn.innerText = isDark ? "☀️ 亮起来" : "🌙 暗黑";
+                // 获取当前的 data-theme 属性值
+                const currentTheme = htmlEl.getAttribute('data-theme');
+                // 切换逻辑
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                // 应用新的 data-theme 属性
+                htmlEl.setAttribute('data-theme', newTheme);
+                
+                // 保存到本地存储 (键名统一为 'theme')
+                localStorage.setItem('theme', newTheme);
+                
+                // 更新按钮文字
+                toggleBtn.innerText = newTheme === 'light' ? "🌙 模式" : "☀️ 模式";
             });
         }
     </script>
+
 
 </body>
 </html>

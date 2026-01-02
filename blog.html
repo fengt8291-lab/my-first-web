@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 
-        <!-- 引入 Firebase SDK -->
+    <!-- 引入 Firebase SDK (唯一模块) -->
     <script type="module">
         // 👇 导入 Firebase 函数
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-        // 👇 这里粘贴你刚才复制的配置！
+        // 👇 你的配置 (只定义一次)
         const firebaseConfig = {
             apiKey: "AIzaSyCuszDYabmpna95pemynxZp0c74zysMP-k",
             authDomain: "my-awesome-blog-23802.firebaseapp.com",
@@ -20,24 +20,138 @@
             storageBucket: "my-awesome-blog-23802.firebasestorage.app",
             messagingSenderId: "900231686530",
             appId: "1:900231686530:web:4b50022f9049bfb169479b"
-            };
+        };
 
-
-        // 初始化 Firebase
+        // 初始化 Firebase (只初始化一次)
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const postsRef = ref(db, 'posts'); // 指向数据库里的 'posts' 节点
+        const postsRef = ref(db, 'posts');
 
         // 👇 把 db 和 postsRef 暴露给全局，方便下面的非 module 脚本使用
         window.db = db;
         window.postsRef = postsRef;
         window.fbPush = push;
         window.fbRemove = remove;
-    </script>
 
+        // --- 业务逻辑 (合并到这里) ---
+        const postInput = document.getElementById('postInput');
+        const publishBtn = document.getElementById('publishBtn');
+        const blogList = document.getElementById('blogList');
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+
+        let currentImageBase64 = null;
+
+        // --- 功能：图片预览 ---
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 500 * 1024) { 
+                alert('图片请限制在 500KB 以内，防止超出 Firebase 限制！');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                currentImageBase64 = event.target.result;
+                imagePreview.src = currentImageBase64;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        removeImageBtn.addEventListener('click', () => {
+            currentImageBase64 = null;
+            imageInput.value = '';
+            previewContainer.style.display = 'none';
+        });
+
+        // --- 功能：实时监听 ---
+        function listenToPosts() {
+            onValue(postsRef, (snapshot) => {
+                const data = snapshot.val();
+                blogList.innerHTML = ''; // 清空
+
+                if (!data) {
+                    blogList.innerHTML = '<div style="text-align:center; opacity:0.5; padding: 20px;">📭 暂无日志，快来抢沙发！</div>';
+                    return;
+                }
+
+                // 转换数组并倒序
+                const postsArray = Object.entries(data).map(([key, value]) => {
+                    return { id: key, ...value };
+                }).reverse(); 
+
+                postsArray.forEach((post) => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+                    
+                    const imageHtml = post.image ? `<img src="${post.image}" alt="Post Image">` : '';
+
+                    postCard.innerHTML = `
+                        <div class="post-meta">
+                            <span>📅 ${post.date}</span>
+                            <button class="delete-btn" data-id="${post.id}">删除</button>
+                        </div>
+                        <div class="post-content">
+                            ${post.content}
+                            ${imageHtml}
+                        </div>
+                    `;
+                    blogList.appendChild(postCard);
+                });
+
+                // 重新绑定删除按钮事件
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        if(confirm('确定删除？')) {
+                            const postRef = ref(db, 'posts/' + id);
+                            remove(postRef);
+                        }
+                    });
+                });
+            });
+        }
+
+        // --- 功能：发布 ---
+        publishBtn.addEventListener('click', () => {
+            const content = postInput.value.trim();
+            if (!content && !currentImageBase64) {
+                alert('写点字或者传张图吧！');
+                return;
+            }
+
+            const newPost = {
+                content: content,
+                image: currentImageBase64,
+                date: new Date().toLocaleString()
+            };
+
+            // 写入数据库
+            push(postsRef, newPost)
+                .then(() => {
+                    console.log("✅ 发布成功");
+                    // 清空界面
+                    postInput.value = '';
+                    currentImageBase64 = null;
+                    previewContainer.style.display = 'none';
+                    imageInput.value = '';
+                })
+                .catch((error) => {
+                    alert("❌ 发布失败：" + error.message);
+                });
+        });
+
+        // 🚀 启动监听
+        listenToPosts();
+
+    </script>
 
     <title>我的博客日志</title>
     <style>
+        /* ... 你的 CSS 样式 (保持不变) ... */
         /* --- 1. 页面基础布局 --- */
         body {
             background-color: var(--bg-color);
@@ -76,12 +190,12 @@
             height: 150px;
             padding: 1rem;
             border-radius: 8px;
-            border: 2px solid var(--text-color); /* 边框颜色会随主题变 */
+            border: 2px solid var(--text-color);
             background-color: var(--bg-color);
             color: var(--text-color);
             font-size: 1rem;
             font-family: inherit;
-            resize: vertical; /* 允许垂直拉伸 */
+            resize: vertical;
             margin-bottom: 1rem;
             outline: none;
             opacity: 0.9;
@@ -89,7 +203,7 @@
 
         #postInput:focus {
             opacity: 1;
-            border-color: var(--accent-color); /* 聚焦时变强调色 */
+            border-color: var(--accent-color);
         }
 
         .publish-btn {
@@ -100,7 +214,7 @@
             border-radius: 6px;
             font-size: 1rem;
             cursor: pointer;
-            float: right; /* 靠右对齐 */
+            float: right;
             transition: transform 0.1s, background-color 0.2s;
         }
         .publish-btn:hover {
@@ -110,7 +224,6 @@
             transform: scale(0.98);
         }
 
-        /* 清除浮动 */
         .clearfix::after {
             content: "";
             clear: both;
@@ -129,7 +242,7 @@
             padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--accent-color); /* 左侧装饰条 */
+            border-left: 5px solid var(--accent-color);
             animation: slideIn 0.3s ease-out;
             transition: background-color 0.3s ease;
         }
@@ -156,7 +269,7 @@
         
         /* 👇 新增：发布的图片样式 */
         .post-content img {
-            max-width: 100%; /* 不超过容器宽度 */
+            max-width: 100%;
             border-radius: 8px;
             margin-top: 10px;
             display: block;
@@ -176,7 +289,7 @@
             opacity: 1;
         }
 
-                /* 图片上传相关样式 */
+        /* 图片上传相关样式 */
         .image-uploader {
             margin-bottom: 1rem;
             display: flex;
@@ -202,8 +315,6 @@
             font-size: 0.8rem;
             opacity: 0.5;
         }
-
-
     </style>
 </head>
 <body>
@@ -256,152 +367,6 @@
         </div>
 
     </div>
-
-    <!-- --- 核心逻辑脚本 --- -->
-            <script>
-        // 1. 获取元素
-        const postInput = document.getElementById('postInput');
-        const publishBtn = document.getElementById('publishBtn');
-        const blogList = document.getElementById('blogList');
-        const imageInput = document.getElementById('imageInput');
-        const previewContainer = document.getElementById('previewContainer');
-        const imagePreview = document.getElementById('imagePreview');
-        const removeImageBtn = document.getElementById('removeImageBtn');
-
-        let currentImageBase64 = null;
-
-        // --- 图片预览逻辑 (保持不变) ---
-        imageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            // ⚠️ 注意：Firebase 免费版单个节点限制 10MB。
-            // 如果你传大图，Firebase 会直接报错！建议传小于 500KB 的图。
-            if (file.size > 500 * 1024) { 
-                alert('警告：为了不超出 Firebase 免费额度，图片请限制在 500KB 以内！');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                currentImageBase64 = event.target.result;
-                imagePreview.src = currentImageBase64;
-                previewContainer.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        });
-
-        removeImageBtn.addEventListener('click', () => {
-            currentImageBase64 = null;
-            imageInput.value = '';
-            previewContainer.style.display = 'none';
-        });
-
-        // --- 🔥 核心改变：渲染逻辑 ---
-        // 不再是从 localStorage 读取，而是“监听”数据库
-        function listenToPosts() {
-            // onValue 是 Firebase 的监听器：只要数据库变了，它就自动运行
-            onValue(window.postsRef, (snapshot) => {
-                const data = snapshot.val();
-                blogList.innerHTML = ''; // 清空列表
-
-                if (!data) {
-                    blogList.innerHTML = '<div style="text-align:center; opacity:0.5;">暂无日志，快来抢沙发！</div>';
-                    return;
-                }
-
-                // 把 Firebase 返回的对象格式 转换成数组格式，并按时间倒序
-                const postsArray = Object.entries(data).map(([key, value]) => {
-                    return { id: key, ...value };
-                }).reverse(); // 最新的在最上面
-
-                // 渲染
-                postsArray.forEach((post) => {
-                    const postCard = document.createElement('div');
-                    postCard.className = 'post-card';
-                    
-                    const imageHtml = post.image ? `<img src="${post.image}" alt="Post Image">` : '';
-
-                    postCard.innerHTML = `
-                        <div class="post-meta">
-                            <span>📅 ${post.date}</span>
-                            <button class="delete-btn" onclick="window.deletePost('${post.id}')">删除</button>
-                        </div>
-                        <div class="post-content">
-                            ${post.content}
-                            ${imageHtml}
-                        </div>
-                    `;
-                    blogList.appendChild(postCard);
-                });
-            });
-        }
-
-        // --- 🔥 核心改变：发布逻辑 ---
-        publishBtn.addEventListener('click', () => {
-            const content = postInput.value.trim();
-
-            if (!content && !currentImageBase64) {
-                alert('写点字或者传张图吧！');
-                return;
-            }
-
-            const newPost = {
-                content: content,
-                image: currentImageBase64,
-                date: new Date().toLocaleString()
-            };
-
-            // 使用 Firebase 的 push 写入数据库
-            window.fbPush(window.postsRef, newPost)
-                .then(() => {
-                    // 成功回调
-                    console.log("发布成功！");
-                    postInput.value = '';
-                    currentImageBase64 = null;
-                    previewContainer.style.display = 'none';
-                    imageInput.value = '';
-                })
-                .catch((error) => {
-                    alert("发布失败：" + error.message);
-                });
-        });
-
-        // --- 🔥 核心改变：删除逻辑 ---
-        window.deletePost = function(id) {
-            if(confirm('确定要删除这条日志吗？')) {
-                // 根据数据在数据库中的唯一 Key 来删除
-                const postRef = ref(window.db, 'posts/' + id);
-                window.fbRemove(postRef);
-            }
-        };
-
-        // 启动监听
-        listenToPosts();
-
-    </script>
-
-
-
-    <!-- --- 暗黑模式脚本 (别忘了) --- -->
-    <script>
-        const toggleBtn = document.getElementById('themeToggle');
-        const htmlEl = document.documentElement;
-
-        if (localStorage.getItem('siteTheme') === 'dark') {
-            htmlEl.classList.add('dark');
-            toggleBtn.innerText = "☀️ 亮起来";
-        }
-
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                htmlEl.classList.toggle('dark');
-                const isDark = htmlEl.classList.contains('dark');
-                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
-                toggleBtn.innerText = isDark ? "☀️ 亮起来" : "🌙 暗黑";
-            });
-        }
-    </script>
 
 </body>
 </html>

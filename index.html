@@ -3,82 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>我的未来产品 - 让工作更高效</title>
-    <style>
-        /* 全局样式重置与字体 */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-        body { line-height: 1.6; color: #333; background-color: #f9fafb; }
+        <style>
+        /* --- 1. 删除了全局 Reset (Body 的重置)，因为 style.css 已经接管了 --- */
         
-        /* 导航栏 */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; }
-        .logo { font-size: 1.5rem; font-weight: bold; color: #2563eb; }
-        .nav-links a { text-decoration: none; color: #666; margin-left: 20px; font-weight: 500; transition: color 0.3s; }
-        .nav-links a:hover { color: #2563eb; }
+        /* --- 2. 导航栏适配 (使用变量) --- */
+        nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 1.5rem 5%; 
+            background: var(--nav-bg); /* 改：使用导航栏背景变量 */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            position: sticky; 
+            top: 0; 
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent-color); }
+        .nav-links a { text-decoration: none; color: var(--text-color); margin-left: 20px; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--accent-color); }
 
-        /* 核心区域 (Hero Section) */
-        header { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 6rem 20px; background: white; }
-        h1 { font-size: 3rem; margin-bottom: 1.5rem; color: #111827; line-height: 1.2; }
-        .subtitle { font-size: 1.25rem; color: #4b5563; max-width: 600px; margin-bottom: 2.5rem; }
-        .cta-button { background-color: #2563eb; color: white; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: transform 0.2s, box-shadow 0.2s; }
+        /* --- 3. Hero 区域适配 --- */
+        /* 这里我们用 card-bg 作为背景，让它和网页背景有区分 */
+        header { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center; 
+            padding: 6rem 20px; 
+            background: var(--card-bg); /* 改：使用卡片背景变量 */
+            transition: background-color 0.3s ease;
+        }
+        
+        h1 { 
+            font-size: 3rem; 
+            margin-bottom: 1.5rem; 
+            color: var(--text-color); /* 改：使用文字颜色变量 */
+            line-height: 1.2; 
+        }
+        
+        .subtitle { 
+            font-size: 1.25rem; 
+            color: var(--text-color); 
+            opacity: 0.8; /* 稍微淡一点，作为副标题 */
+            max-width: 600px; 
+            margin-bottom: 2.5rem; 
+        }
+        
+        /* CTA 按钮 */
+        .cta-button { 
+            background-color: var(--accent-color); /* 改：使用强调色 */
+            color: white; /* 按钮字保持白色 */
+            padding: 15px 40px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+        }
         .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
 
-        /* 特性展示区 */
-        .features { padding: 5rem 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
-        .feature-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s; }
+        /* --- 4. 特性展示区适配 --- */
+        .features { 
+            padding: 5rem 5%; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 2rem; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        
+        .feature-card { 
+            background: var(--card-bg); /* 改：卡片背景色 */
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            text-align: center; 
+            transition: transform 0.3s, background-color 0.3s ease;
+        }
         .feature-card:hover { transform: translateY(-5px); }
+        
         .icon { font-size: 2.5rem; margin-bottom: 1rem; }
-        .feature-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .feature-desc { color: #6b7280; }
+        
+        .feature-title { 
+            font-size: 1.25rem; 
+            font-weight: bold; 
+            margin-bottom: 0.5rem; 
+            color: var(--text-color); /* 改 */
+        }
+        
+        .feature-desc { 
+            color: var(--text-color); 
+            opacity: 0.7; /* 改：稍微透明一点，不抢眼 */
+        }
+
+        /* --- 5. 博客 & 个人简介适配 --- */
+        .container { max-width: 1000px; margin: 0 auto; padding: 4rem 20px; }
+        .section-title { text-align: center; font-size: 2rem; margin-bottom: 3rem; color: var(--text-color); }
+
+        .about-blog-wrapper { display: flex; gap: 4rem; align-items: flex-start; }
+        
+        .profile-card { 
+            flex: 1; 
+            text-align: center; 
+            background: var(--card-bg); /* 改 */
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            transition: background-color 0.3s;
+        }
+        
+        .blog-section { flex: 2; }
+        
+        .post-item { 
+            background: var(--card-bg); /* 改 */
+            padding: 1.5rem; 
+            border-radius: 8px; 
+            margin-bottom: 1.5rem; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03); 
+            transition: transform 0.2s, background-color 0.3s;
+        }
+        
+        .post-date { font-size: 0.85rem; color: var(--text-color); opacity: 0.5; margin-bottom: 0.5rem; display: block; }
+        .post-title { font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-color); }
+        .post-excerpt { color: var(--text-color); opacity: 0.8; font-size: 0.95rem; line-height: 1.6; }
+        .read-more { color: var(--accent-color); text-decoration: none; font-weight: 500; font-size: 0.9rem; display: inline-block; margin-top: 0.5rem; }
+        .read-more:hover { text-decoration: underline; }
 
         /* 页脚 */
-        footer { text-align: center; padding: 2rem; background: white; margin-top: 4rem; color: #9ca3af; font-size: 0.9rem; }
-        
-        /* 手机端适配 */
+        footer { text-align: center; padding: 2rem; background: var(--card-bg); margin-top: 4rem; color: var(--text-color); opacity: 0.6; font-size: 0.9rem; transition: background-color 0.3s; }
+
+        /* --- 手机端适配 (保持不变) --- */
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             header { padding: 4rem 20px; }
-        }
-
-        /* --- 博客板块样式 --- */
-        .container { max-width: 1000px; margin: 0 auto; padding: 4rem 20px; }
-        .section-title { text-align: center; font-size: 2rem; margin-bottom: 3rem; color: #111827; }
-
-        /* 关于我 & 博客的左右布局 */
-        .about-blog-wrapper { display: flex; gap: 4rem; align-items: flex-start; }
-        .profile-card { flex: 1; text-align: center; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .avatar { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 1rem; object-fit: cover; border: 3px solid #2563eb; }
-        .profile-name { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .profile-bio { color: #666; font-size: 0.95rem; margin-bottom: 1rem; }
-
-        /* 博客文章列表 */
-        .blog-section { flex: 2; }
-        .post-item { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: transform 0.2s; }
-        .post-item:hover { transform: translateX(5px); }
-        .post-date { font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.5rem; display: block; }
-        .post-title { font-size: 1.25rem; margin-bottom: 0.5rem; color: #1f2937; }
-        .post-excerpt { color: #4b5563; font-size: 0.95rem; line-height: 1.6; }
-        .read-more { color: #2563eb; text-decoration: none; font-weight: 500; font-size: 0.9rem; display: inline-block; margin-top: 0.5rem; }
-        .read-more:hover { text-decoration: underline; }
-
-        /* 手机端适配：变成上下排列 */
-        @media (max-width: 768px) {
             .about-blog-wrapper { flex-direction: column; }
         }
-
-        
     </style>
+
 </head>
 <body>
 
     <!-- 顶部导航 -->
-    <nav>
+    <header>
+        <!-- Logo区域 (为了让 space-between 生效，必须要两样东西) -->
+        <div class="logo">My Website</div> 
+        
+        <!-- 链接区域 -->
         <div class="nav-links">
-            <a href="#home">首页</a>
+            <a href="index.html">首页</a>
             <a href="game.html">游戏</a>
-            <a href="#design.html">设计</a>
-            <a href="#blog">日志</a>
+            <a href="design.html">设计</a>
+            <a href="blog.html">日志</a>
+            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
+                🌙 模式
+            </button>
         </div>
-    </nav>
+    </header>
 
     <!-- 核心标题区 -->
     <header>
@@ -153,6 +234,27 @@
     <footer>
         &copy; 2023 MyBrand Inc. 保留所有权利.
     </footer>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const htmlEl = document.documentElement;
+
+        // 检查存储
+        if (localStorage.getItem('siteTheme') === 'dark') {
+            htmlEl.classList.add('dark');
+            toggleBtn.innerText = "☀️ 亮起来";
+        }
+
+        // 绑定点击事件
+        if (toggleBtn) { // 多加个保险，防止找不到按钮报错
+            toggleBtn.addEventListener('click', () => {
+                htmlEl.classList.toggle('dark');
+                const isDark = htmlEl.classList.contains('dark');
+                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+                toggleBtn.innerText = isDark ? "☀️ 亮起来" : "🌙 暗黑";
+            });
+        }
+    </script>
 
 </body>
 </html>

@@ -3,46 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>极速点击挑战</title>
     <style>
         /* CSS 样式区域 */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         
         body {
-            background-color: #f0f9ff;
+            /* 👇 修改 1：背景色改用变量 */
+            background-color: var(--bg-color); 
+            color: var(--text-color); /* 👇 加一行：确保文字颜色也跟着变 */
+            
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh; /* 撑满全屏 */
+            /* min-height 比 height 更好，防止内容过多时被截断 */
+            min-height: 100vh; 
             text-align: center;
         }
 
         .game-container {
-            background: white;
+            /* 👇 修改 2：卡片背景改用变量 */
+            background: var(--card-bg);
             padding: 3rem;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            /* 加个平滑过渡 */
+            transition: background-color 0.3s ease; 
         }
 
-        h1 { color: #0ea5e9; margin-bottom: 1rem; }
+        /* 标题颜色也用变量，或者保持强调色 */
+        h1 { 
+            color: var(--accent-color); 
+            margin-bottom: 1rem; 
+        }
         
         .score-board {
             font-size: 4rem;
             font-weight: bold;
-            color: #334155;
+            /* 👇 修改 3：分数颜色 */
+            color: var(--text-color);
             margin: 1rem 0;
         }
 
         .high-score {
             font-size: 1rem;
-            color: #64748b;
+            /* 👇 修改 4：最高分颜色 */
+            color: var(--text-color);
+            opacity: 0.7; /* 稍微淡一点 */
             margin-bottom: 2rem;
         }
 
         /* 游戏按钮样式 */
         #clickBtn {
-            background-color: #0ea5e9;
+            /* 👇 修改 5：按钮颜色用强调色变量 */
+            background-color: var(--accent-color);
             color: white;
             border: none;
             padding: 20px 40px;
@@ -50,28 +65,48 @@
             border-radius: 50px;
             cursor: pointer;
             transition: transform 0.1s, box-shadow 0.1s;
-            box-shadow: 0 4px 0 #0284c7; /* 按钮底部的立体感 */
+            box-shadow: 0 4px 0 var(--accent-color); /* 这里的阴影也用变量会更协调，但保持立体感可以稍微深一点，或者直接继承 */
         }
 
         #clickBtn:active {
-            transform: translateY(4px); /* 按下去时的位移 */
-            box-shadow: 0 0 0 #0284c7; /* 按下去阴影消失 */
+            transform: translateY(4px); 
+            box-shadow: none;
         }
 
         .reset-btn {
             margin-top: 2rem;
-            background: none;
-            border: 1px solid #cbd5e1;
+            background: transparent; /* 改为透明背景 */
+            border: 1px solid var(--text-color); /* 边框用文字颜色 */
             padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
-            color: #64748b;
+            color: var(--text-color); /* 文字颜色 */
+            opacity: 0.7;
         }
-        .reset-btn:hover { background: #f1f5f9; }
-
+        .reset-btn:hover { 
+            background: var(--text-color); 
+            color: var(--bg-color); /* 悬停时反色 */
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
+    <!-- 顶部导航 -->
+    <header>
+        <!-- Logo区域 (为了让 space-between 生效，必须要两样东西) -->
+        <div class="logo">My Website</div> 
+        
+        <!-- 链接区域 -->
+        <div class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="game.html">游戏</a>
+            <a href="design.html">设计</a>
+            <a href="blog.html">日志</a>
+            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
+                🌙 模式
+            </button>
+        </div>
+    </header>
 
     <div class="game-container">
         <h1>🚀 极速点击挑战</h1>
@@ -191,6 +226,27 @@
             highScoreDisplay.innerText = highScore;
         }
 
+    </script>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const htmlEl = document.documentElement;
+
+        // 检查存储
+        if (localStorage.getItem('siteTheme') === 'dark') {
+            htmlEl.classList.add('dark');
+            toggleBtn.innerText = "☀️ 亮起来";
+        }
+
+        // 绑定点击事件
+        if (toggleBtn) { // 多加个保险，防止找不到按钮报错
+            toggleBtn.addEventListener('click', () => {
+                htmlEl.classList.toggle('dark');
+                const isDark = htmlEl.classList.contains('dark');
+                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+                toggleBtn.innerText = isDark ? "☀️ 亮起来" : "🌙 暗黑";
+            });
+        }
     </script>
 
 </body>

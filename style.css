@@ -1,0 +1,63 @@
+/* --- 全站通用地基 --- */
+
+/* 🌟 CSS 变量定义（暗黑模式核心） */
+:root {
+    /* 白天模式 */
+    --bg-color: #f8fafc;
+    --text-color: #334155;
+    --card-bg: #ffffff;
+    --accent-color: #0ea5e9;
+    --nav-bg: #ffffff;
+}
+
+/* 夜间模式 */
+html.dark {
+    --bg-color: #0f172a;
+    --text-color: #f1f5f9;
+    --card-bg: #1e293b;
+    --accent-color: #38bdf8;
+    --nav-bg: #1e293b;
+}
+
+/* 全局 Body 样式 */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    line-height: 1.6;
+}
+
+/* 导航栏通用样式 */
+header {
+    background-color: var(--nav-bg);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    /*position: sticky; /* 让导航栏吸顶 */
+    /*top: 0;*/
+    /*z-index: 100; /* 确保导航栏在内容上方 */
+    transition: background-color 0.3s ease;
+}
+
+/* 导航链接样式 */
+header a {
+    color: var(--text-color);
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+header a:hover {
+    color: var(--accent-color);
+}
+
+/* 按钮通用样式 */
+button {
+    cursor: pointer;
+    font-family: inherit;
+}

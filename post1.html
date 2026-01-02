@@ -3,39 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>我为什么要建立这个个人网站？</title>
-    <style>
-        /* 复用全局样式 */
+        <style>
+        /* --- 1. 基础重置 --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-        body { line-height: 1.8; color: #333; background-color: #f9fafb; }
         
-        /* 导航栏 */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .logo { font-size: 1.5rem; font-weight: bold; color: #2563eb; }
-        .nav-links a { text-decoration: none; color: #666; margin-left: 20px; font-weight: 500; }
-        .nav-links a:hover { color: #2563eb; }
+        /* --- 2. Body 样式 --- */
+        body { 
+            line-height: 1.8; 
+            /* 👇 修改：背景用 bg-color，文字用 text-color */
+            color: var(--text-color); 
+            background-color: var(--bg-color);
+        }
         
-        /* 文章内容容器 */
+        /* --- 3. 导航栏 (建议把 HTML 里的 nav 改成 header) --- */
+        header { /* 这里我把 nav 改成了 header，记得 HTML 也要改 */
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 1.5rem 5%; 
+            background: var(--nav-bg); /* 👇 修改：导航背景 */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent-color); } /* 👇 修改 */
+        .nav-links a { text-decoration: none; color: var(--text-color); margin-left: 20px; font-weight: 500; } /* 👇 修改 */
+        .nav-links a:hover { color: var(--accent-color); } /* 👇 修改 */
+        
+        /* --- 4. 文章内容容器 --- */
         .article-container { max-width: 800px; margin: 3rem auto; padding: 0 20px; }
         .article-header { text-align: center; margin-bottom: 2rem; }
-        .article-date { color: #9ca3af; font-size: 0.9rem; }
-        .article-title { font-size: 2rem; margin: 1rem 0; color: #111827; }
-        .article-content { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .article-content p { margin-bottom: 1.5rem; font-size: 1.05rem; color: #374151; }
-        .article-content h2 { margin: 2rem 0 1rem; color: #1f2937; }
+        .article-date { color: var(--text-color); opacity: 0.6; font-size: 0.9rem; } /* 👇 修改 */
+        .article-title { font-size: 2rem; margin: 1rem 0; color: var(--text-color); } /* 👇 修改 */
         
-        /* 返回按钮 */
-        .back-button { display: inline-block; margin: 2rem 0; padding: 10px 25px; background: #e5e7eb; color: #374151; text-decoration: none; border-radius: 6px; transition: background 0.3s; }
-        .back-button:hover { background: #d1d5db; }
+        .article-content { 
+            background: var(--card-bg); /* 👇 修改：卡片背景 */
+            padding: 2.5rem; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+            transition: background-color 0.3s ease; /* 加个过渡动画 */
+        }
         
-        /* 手机端适配 */
+        .article-content p { margin-bottom: 1.5rem; font-size: 1.05rem; color: var(--text-color); opacity: 0.9; } /* 👇 修改 */
+        .article-content h2 { margin: 2rem 0 1rem; color: var(--text-color); } /* 👇 修改 */
+        
+        /* --- 5. 返回按钮 --- */
+        .back-button { 
+            display: inline-block; 
+            margin: 2rem 0; 
+            padding: 10px 25px; 
+            background: var(--card-bg); /* 👇 修改：按钮背景 */
+            color: var(--text-color); /* 👇 修改：按钮文字 */
+            text-decoration: none; 
+            border: 1px solid var(--text-color); /* 加个边框让它更明显 */
+            border-radius: 6px; 
+            transition: background 0.3s, color 0.3s; 
+        }
+        .back-button:hover { 
+            background: var(--accent-color); /* 悬停变强调色 */
+            color: white; 
+            border-color: var(--accent-color);
+        }
+        
+        /* --- 6. 手机端适配 (保持不变) --- */
         @media (max-width: 768px) {
             .article-title { font-size: 1.5rem; }
             .article-content { padding: 1.5rem; }
         }
     </style>
+
 </head>
 <body>
+
+    <!-- 顶部导航 -->
+    <header>
+        <!-- Logo区域 (为了让 space-between 生效，必须要两样东西) -->
+        <div class="logo">My Website</div> 
+        
+        <!-- 链接区域 -->
+        <div class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="game.html">游戏</a>
+            <a href="design.html">设计</a>
+            <a href="blog.html">日志</a>
+            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
+                🌙 模式
+            </button>
+        </div>
+    </header>
 
     <!-- 顶部导航（和首页一样，方便返回） -->
     <nav>
@@ -84,6 +139,27 @@
         <!-- 返回首页按钮 -->
         <a href="index.html" class="back-button">← 返回首页</a>
     </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const htmlEl = document.documentElement;
+
+        // 检查存储
+        if (localStorage.getItem('siteTheme') === 'dark') {
+            htmlEl.classList.add('dark');
+            toggleBtn.innerText = "☀️ 亮起来";
+        }
+
+        // 绑定点击事件
+        if (toggleBtn) { // 多加个保险，防止找不到按钮报错
+            toggleBtn.addEventListener('click', () => {
+                htmlEl.classList.toggle('dark');
+                const isDark = htmlEl.classList.contains('dark');
+                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+                toggleBtn.innerText = isDark ? "☀️ 亮起来" : "🌙 暗黑";
+            });
+        }
+    </script>
 
 </body>
 </html>

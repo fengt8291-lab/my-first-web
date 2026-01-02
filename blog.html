@@ -4,6 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+
+        <!-- 引入 Firebase SDK -->
+    <script type="module">
+        // 👇 导入 Firebase 函数
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        // 👇 这里粘贴你刚才复制的配置！
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuszDYabmpna95pemynxZp0c74zysMP-k",
+            authDomain: "my-awesome-blog-23802.firebaseapp.com",
+            databaseURL: "https://my-awesome-blog-23802-default-rtdb.firebaseio.com",
+            projectId: "my-awesome-blog-23802",
+            storageBucket: "my-awesome-blog-23802.firebasestorage.app",
+            messagingSenderId: "900231686530",
+            appId: "1:900231686530:web:4b50022f9049bfb169479b"
+            };
+
+
+        // 初始化 Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const postsRef = ref(db, 'posts'); // 指向数据库里的 'posts' 节点
+
+        // 👇 把 db 和 postsRef 暴露给全局，方便下面的非 module 脚本使用
+        window.db = db;
+        window.postsRef = postsRef;
+        window.fbPush = push;
+        window.fbRemove = remove;
+    </script>
+
+
     <title>我的博客日志</title>
     <style>
         /* --- 1. 页面基础布局 --- */
@@ -226,7 +258,7 @@
     </div>
 
     <!-- --- 核心逻辑脚本 --- -->
-        <script>
+            <script>
         // 1. 获取元素
         const postInput = document.getElementById('postInput');
         const publishBtn = document.getElementById('publishBtn');
@@ -236,64 +268,76 @@
         const imagePreview = document.getElementById('imagePreview');
         const removeImageBtn = document.getElementById('removeImageBtn');
 
-        let currentImageBase64 = null; // 临时存当前选中的图片数据
+        let currentImageBase64 = null;
 
-        // 2. 读取存储的帖子
-        let posts = JSON.parse(localStorage.getItem('myBlogPosts')) || [];
-
-        // --- 新增：图片预览逻辑 ---
+        // --- 图片预览逻辑 (保持不变) ---
         imageInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
-            // 检查文件大小 (限制 1MB = 1024 * 1024)
-            if (file.size > 1024 * 1024) {
-                alert('图片太大了！localStorage 存不下，请选一张小于 1MB 的图片。');
-                imageInput.value = ''; // 清空选择
+            
+            // ⚠️ 注意：Firebase 免费版单个节点限制 10MB。
+            // 如果你传大图，Firebase 会直接报错！建议传小于 500KB 的图。
+            if (file.size > 500 * 1024) { 
+                alert('警告：为了不超出 Firebase 免费额度，图片请限制在 500KB 以内！');
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = function(event) {
-                currentImageBase64 = event.target.result; // 获取 Base64 字符串
+                currentImageBase64 = event.target.result;
                 imagePreview.src = currentImageBase64;
                 previewContainer.style.display = 'block';
             };
             reader.readAsDataURL(file);
         });
 
-        // --- 新增：移除图片逻辑 ---
         removeImageBtn.addEventListener('click', () => {
             currentImageBase64 = null;
             imageInput.value = '';
             previewContainer.style.display = 'none';
         });
 
-        // 3. 定义渲染函数
-        function renderPosts() {
-            blogList.innerHTML = ''; 
-            posts.forEach((post, index) => {
-                const postCard = document.createElement('div');
-                postCard.className = 'post-card';
-                
-                // 判断是否有图片，如果有就拼接到 HTML 里
-                const imageHtml = post.image ? `<img src="${post.image}" alt="Post Image">` : '';
+        // --- 🔥 核心改变：渲染逻辑 ---
+        // 不再是从 localStorage 读取，而是“监听”数据库
+        function listenToPosts() {
+            // onValue 是 Firebase 的监听器：只要数据库变了，它就自动运行
+            onValue(window.postsRef, (snapshot) => {
+                const data = snapshot.val();
+                blogList.innerHTML = ''; // 清空列表
 
-                postCard.innerHTML = `
-                    <div class="post-meta">
-                        <span>📅 ${post.date}</span>
-                        <button class="delete-btn" onclick="deletePost(${index})">删除</button>
-                    </div>
-                    <div class="post-content">
-                        ${post.content}
-                        ${imageHtml}
-                    </div>
-                `;
-                blogList.appendChild(postCard);
+                if (!data) {
+                    blogList.innerHTML = '<div style="text-align:center; opacity:0.5;">暂无日志，快来抢沙发！</div>';
+                    return;
+                }
+
+                // 把 Firebase 返回的对象格式 转换成数组格式，并按时间倒序
+                const postsArray = Object.entries(data).map(([key, value]) => {
+                    return { id: key, ...value };
+                }).reverse(); // 最新的在最上面
+
+                // 渲染
+                postsArray.forEach((post) => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+                    
+                    const imageHtml = post.image ? `<img src="${post.image}" alt="Post Image">` : '';
+
+                    postCard.innerHTML = `
+                        <div class="post-meta">
+                            <span>📅 ${post.date}</span>
+                            <button class="delete-btn" onclick="window.deletePost('${post.id}')">删除</button>
+                        </div>
+                        <div class="post-content">
+                            ${post.content}
+                            ${imageHtml}
+                        </div>
+                    `;
+                    blogList.appendChild(postCard);
+                });
             });
         }
 
-        // 4. 发布按钮逻辑
+        // --- 🔥 核心改变：发布逻辑 ---
         publishBtn.addEventListener('click', () => {
             const content = postInput.value.trim();
 
@@ -304,48 +348,39 @@
 
             const newPost = {
                 content: content,
-                image: currentImageBase64, // 👈 保存图片数据
-                date: new Date().toLocaleString(),
-                id: Date.now()
+                image: currentImageBase64,
+                date: new Date().toLocaleString()
             };
 
-            posts.unshift(newPost);
-            
-            // 这里可能会因为图片太大报错，加个简单的错误捕获
-            try {
-                localStorage.setItem('myBlogPosts', JSON.stringify(posts));
-            } catch (e) {
-                alert('哎呀，存储空间满了（QuotaExceededError）！\n请尝试删除一些旧帖子，或者上传更小的图片。');
-                // 刚才加进数组但没存进去的，要撤回，否则刷新会丢
-                posts.shift(); 
-                return;
-            }
-
-            // 重置界面
-            postInput.value = '';
-            currentImageBase64 = null;
-            previewContainer.style.display = 'none';
-            imageInput.value = '';
-
-            renderPosts();
+            // 使用 Firebase 的 push 写入数据库
+            window.fbPush(window.postsRef, newPost)
+                .then(() => {
+                    // 成功回调
+                    console.log("发布成功！");
+                    postInput.value = '';
+                    currentImageBase64 = null;
+                    previewContainer.style.display = 'none';
+                    imageInput.value = '';
+                })
+                .catch((error) => {
+                    alert("发布失败：" + error.message);
+                });
         });
 
-        // 5. 删除功能
-        window.deletePost = function(index) {
+        // --- 🔥 核心改变：删除逻辑 ---
+        window.deletePost = function(id) {
             if(confirm('确定要删除这条日志吗？')) {
-                posts.splice(index, 1);
-                try {
-                    localStorage.setItem('myBlogPosts', JSON.stringify(posts));
-                    renderPosts();
-                } catch (e) {
-                    alert('删除失败，请刷新重试');
-                }
+                // 根据数据在数据库中的唯一 Key 来删除
+                const postRef = ref(window.db, 'posts/' + id);
+                window.fbRemove(postRef);
             }
         };
 
-        // 初始化
-        renderPosts();
+        // 启动监听
+        listenToPosts();
+
     </script>
+
 
 
     <!-- --- 暗黑模式脚本 (别忘了) --- -->

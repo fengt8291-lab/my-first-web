@@ -8,7 +8,22 @@
     <!-- 引入 Firebase SDK (唯一模块) -->
     <script type="module">
         // 👇 导入 Firebase 函数
-        import { initializeApp, getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js" ;
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js" ;
+
+        // 读取主题设置
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // 主题切换按钮事件
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('themeToggle').textContent = newTheme === 'light' ? '🌙 模式' : '☀️ 模式';
+        });
+
 
         // 👇 你的配置 (只定义一次)
         const firebaseConfig = {
@@ -68,6 +83,7 @@
 
         // --- 功能：实时监听 ---
         function listenToPosts() {
+            blogList.innerHTML = '<div style="text-align:center; padding: 20px;">🔄 正在加载...</div>';
             onValue(postsRef, (snapshot) => {
                 const data = snapshot.val();
                 blogList.innerHTML = ''; // 清空

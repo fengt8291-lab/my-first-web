@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>我的博客日志</title>
+    <style>
+        /* --- 1. 页面基础布局 --- */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding-top: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- 2. 编辑器样式 (发帖框) --- */
+        .editor-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .editor-title {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #postInput {
+            width: 100%;
+            height: 150px;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--text-color); /* 边框颜色会随主题变 */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical; /* 允许垂直拉伸 */
+            margin-bottom: 1rem;
+            outline: none;
+            opacity: 0.9;
+        }
+
+        #postInput:focus {
+            opacity: 1;
+            border-color: var(--accent-color); /* 聚焦时变强调色 */
+        }
+
+        .publish-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            float: right; /* 靠右对齐 */
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        .publish-btn:hover {
+            filter: brightness(1.1);
+        }
+        .publish-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 清除浮动 */
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* --- 3. 帖子列表样式 --- */
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .post-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--accent-color); /* 左侧装饰条 */
+            animation: slideIn 0.3s ease-out;
+            transition: background-color 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .post-meta {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.6;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .post-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            white-space: pre-wrap; 
+        }
+        
+        /* 👇 新增：发布的图片样式 */
+        .post-content img {
+            max-width: 100%; /* 不超过容器宽度 */
+            border-radius: 8px;
+            margin-top: 10px;
+            display: block;
+        }
+        
+        /* 删除按钮 */
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .post-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+                /* 图片上传相关样式 */
+        .image-uploader {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-btn {
+            background-color: var(--bg-color);
+            border: 1px dashed var(--text-color);
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .upload-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .upload-hint {
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- 顶部导航 (复用) -->
+    <header>
+        <div class="logo">My Website</div>
+        <div class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="game.html">游戏</a>
+            <a href="design.html">设计</a>
+            <a href="blog.html" style="color: var(--accent-color);">日志</a>
+            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
+                🌙 模式
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- --- 编辑器区域 --- -->
+        <div class="editor-card">
+            <h2 class="editor-title">✍️ 写点什么呢？</h2>
+            <!-- --- 图片上传区域 --- -->
+            <div class="image-uploader">
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                <button type="button" class="upload-btn" onclick="document.getElementById('imageInput').click()">
+                    📷 添加图片
+                </button>
+                <span class="upload-hint"> (仅支持小图片，建议小于 500KB)</span>
+                
+                <!-- 图片预览容器 -->
+                <div id="previewContainer" style="margin-top: 10px; display: none;">
+                    <img id="imagePreview" src="" style="max-height: 200px; border-radius: 8px; display: block;">
+                    <button type="button" id="removeImageBtn" style="color: red; background: none; border: none; cursor: pointer; font-size: 0.9rem;">移除图片</button>
+                </div>
+            </div>
+
+            <!-- 原有的文本框 -->
+            <textarea id="postInput" placeholder="分享你的心情，支持 Emoji 表情哦... 🌈💻✨"></textarea>
+            
+            <div class="clearfix">
+                <button id="publishBtn" class="publish-btn">发布日志</button>
+            </div>
+        </div>
+
+        <!-- --- 帖子列表区域 --- -->
+        <div id="blogList" class="post-list">
+            <!-- 帖子会通过 JS 插入到这里 -->
+        </div>
+
+    </div>
+
+    <!-- --- 核心逻辑脚本 --- -->
+        <script>
+        // 1. 获取元素
+        const postInput = document.getElementById('postInput');
+        const publishBtn = document.getElementById('publishBtn');
+        const blogList = document.getElementById('blogList');
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+
+        let currentImageBase64 = null; // 临时存当前选中的图片数据
+
+        // 2. 读取存储的帖子
+        let posts = JSON.parse(localStorage.getItem('myBlogPosts')) || [];
+
+        // --- 新增：图片预览逻辑 ---
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 检查文件大小 (限制 1MB = 1024 * 1024)
+            if (file.size > 1024 * 1024) {
+                alert('图片太大了！localStorage 存不下，请选一张小于 1MB 的图片。');
+                imageInput.value = ''; // 清空选择
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                currentImageBase64 = event.target.result; // 获取 Base64 字符串
+                imagePreview.src = currentImageBase64;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // --- 新增：移除图片逻辑 ---
+        removeImageBtn.addEventListener('click', () => {
+            currentImageBase64 = null;
+            imageInput.value = '';
+            previewContainer.style.display = 'none';
+        });
+
+        // 3. 定义渲染函数
+        function renderPosts() {
+            blogList.innerHTML = ''; 
+            posts.forEach((post, index) => {
+                const postCard = document.createElement('div');
+                postCard.className = 'post-card';
+                
+                // 判断是否有图片，如果有就拼接到 HTML 里
+                const imageHtml = post.image ? `<img src="${post.image}" alt="Post Image">` : '';
+
+                postCard.innerHTML = `
+                    <div class="post-meta">
+                        <span>📅 ${post.date}</span>
+                        <button class="delete-btn" onclick="deletePost(${index})">删除</button>
+                    </div>
+                    <div class="post-content">
+                        ${post.content}
+                        ${imageHtml}
+                    </div>
+                `;
+                blogList.appendChild(postCard);
+            });
+        }
+
+        // 4. 发布按钮逻辑
+        publishBtn.addEventListener('click', () => {
+            const content = postInput.value.trim();
+
+            if (!content && !currentImageBase64) {
+                alert('写点字或者传张图吧！');
+                return;
+            }
+
+            const newPost = {
+                content: content,
+                image: currentImageBase64, // 👈 保存图片数据
+                date: new Date().toLocaleString(),
+                id: Date.now()
+            };
+
+            posts.unshift(newPost);
+            
+            // 这里可能会因为图片太大报错，加个简单的错误捕获
+            try {
+                localStorage.setItem('myBlogPosts', JSON.stringify(posts));
+            } catch (e) {
+                alert('哎呀，存储空间满了（QuotaExceededError）！\n请尝试删除一些旧帖子，或者上传更小的图片。');
+                // 刚才加进数组但没存进去的，要撤回，否则刷新会丢
+                posts.shift(); 
+                return;
+            }
+
+            // 重置界面
+            postInput.value = '';
+            currentImageBase64 = null;
+            previewContainer.style.display = 'none';
+            imageInput.value = '';
+
+            renderPosts();
+        });
+
+        // 5. 删除功能
+        window.deletePost = function(index) {
+            if(confirm('确定要删除这条日志吗？')) {
+                posts.splice(index, 1);
+                try {
+                    localStorage.setItem('myBlogPosts', JSON.stringify(posts));
+                    renderPosts();
+                } catch (e) {
+                    alert('删除失败，请刷新重试');
+                }
+            }
+        };
+
+        // 初始化
+        renderPosts();
+    </script>
+
+
+    <!-- --- 暗黑模式脚本 (别忘了) --- -->
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const htmlEl = document.documentElement;
+
+        if (localStorage.getItem('siteTheme') === 'dark') {
+            htmlEl.classList.add('dark');
+            toggleBtn.innerText = "☀️ 亮起来";
+        }
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                htmlEl.classList.toggle('dark');
+                const isDark = htmlEl.classList.contains('dark');
+                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+                toggleBtn.innerText = isDark ? "☀️ 亮起来" : "🌙 暗黑";
+            });
+        }
+    </script>
+
+</body>
+</html>

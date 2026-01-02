@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计作品集</title>
+    <style>
+        /* 基础重置 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            padding: 2rem;
+        }
+
+        /* 标题样式 */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        header h1 { color: #0f172a; margin-bottom: 0.5rem; }
+        header p { color: #64748b; }
+
+        /* --- 🌟 核心技能：CSS Grid 布局 --- */
+        .gallery-container {
+            display: grid; 
+            /* 下面这句话的意思是：
+               自动适应宽度，每列最小300px，不够就自动换行 
+               类似于 Excel 的“自动调整列宽” */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem; /* 卡片之间的间距 */
+            max-width: 1200px;
+            margin: 0 auto; /* 整体居中 */
+        }
+
+        /* --- 卡片样式 --- */
+        .card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden; /* 防止图片圆角溢出 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* 鼠标悬停时的特效：浮起来！ */
+        .card:hover {
+            transform: translateY(-10px); /* 向上浮动 */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); /* 阴影加深 */
+        }
+
+        /* 图片样式 */
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover; /* 保证图片不变形，裁剪中间部分 */
+            display: block;
+        }
+
+        /* 卡片文字内容 */
+        .card-content {
+            padding: 1.5rem;
+        }
+        .card h3 { margin-bottom: 0.5rem; color: #1e293b; }
+        .card p { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+        
+        /* 标签样式 */
+        .tags {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .tag {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>我的设计作品</h1>
+        <p>UI 界面 · 插画 · 3D 渲染</p>
+    </header>
+
+    <div class="gallery-container">
+        
+        <!-- 作品卡片 1 -->
+        <div class="card">
+            <!-- 注意：这里用的是随机图片网站，每次刷新可能不一样 -->
+            <img src="https://picsum.photos/seed/design1/400/300" alt="作品预览">
+            <div class="card-content">
+                <h3>极简天气 APP</h3>
+                <p>一套清新风格的天气应用界面设计，注重排版与留白。</p>
+                <div class="tags">
+                    <span class="tag">UI Design</span>
+                    <span class="tag">Mobile</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 作品卡片 2 -->
+        <div class="card">
+            <img src="https://picsum.photos/seed/design2/400/300" alt="作品预览">
+            <div class="card-content">
+                <h3>赛博朋克海报</h3>
+                <p>为虚构的科技展设计的宣传海报，运用了大量的霓虹色效。</p>
+                <div class="tags">
+                    <span class="tag">Graphic</span>
+                    <span class="tag">Poster</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 作品卡片 3 -->
+        <div class="card">
+            <img src="https://picsum.photos/seed/design3/400/300" alt="作品预览">
+            <div class="card-content">
+                <h3>3D 渲染练习</h3>
+                <p>使用 Blender 制作的低多边形风格室内场景渲染。</p>
+                <div class="tags">
+                    <span class="tag">3D</span>
+                    <span class="tag">Blender</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 作品卡片 4 -->
+        <div class="card">
+            <img src="https://picsum.photos/seed/design4/400/300" alt="作品预览">
+            <div class="card-content">
+                <h3>电商数据大屏</h3>
+                <p>可视化数据展示面板，专为后台管理系统设计。</p>
+                <div class="tags">
+                    <span class="tag">Dashboard</span>
+                    <span class="tag">Web</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

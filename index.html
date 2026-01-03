@@ -3,202 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <title>我的未来产品 - 让工作更高效</title>
+    <!-- 引入统一的 style.css -->
+    <link rel="stylesheet" href="style.css">
+    
         <style>
-        /* --- 1. 删除了全局 Reset (Body 的重置)，因为 style.css 已经接管了 --- */
+        /* --- 1. 导航栏 (如果用了统一 header，这里可以简化，但为了保留特色样式保留) --- */
+        /* 注意：如果冲突，优先级高的会生效。这里主要针对首页特有样式 */
         
-        /* --- 2. 导航栏适配 (使用变量) --- */
-        nav { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 1.5rem 5%; 
-            background: var(--nav-bg); /* 改：使用导航栏背景变量 */
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-            position: sticky; 
-            top: 0; 
-        }
-        .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent-color); }
-        .nav-links a { text-decoration: none; color: var(--text-color); margin-left: 20px; font-weight: 500; transition: color 0.3s; }
-        .nav-links a:hover { color: var(--accent-color); }
-
-        /* --- 3. Hero 区域适配 --- */
-        /* 这里我们用 card-bg 作为背景，让它和网页背景有区分 */
-        header { 
+        /* --- 2. Hero 区域 (核心标题区) --- */
+        header.hero-section { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             text-align: center; 
-            padding: 6rem 20px; 
-            background: var(--card-bg); /* 改：使用卡片背景变量 */
+            padding: 6rem 20px 5rem 20px; /* 👈 底部稍微多留点空间，作为过渡 */
+            
+            /* 👇 修改：背景色改为网页主色，融合更自然 */
+            background: var(--bg-color); 
+            
+            /* 👇 删除：去掉边框和阴影，看起来更干净 */
+            /* border-bottom: 1px solid var(--border-color); */ 
+            /* box-shadow: var(--shadow-sm); */
+            
+            width: 100%;
+            box-sizing: border-box;
             transition: background-color 0.3s ease;
         }
-        
-        h1 { 
-            font-size: 3rem; 
+
+        /* 文字颜色保持不变即可，因为背景色变了，文字对比度会自动适应 */
+        header.hero-section h1 { 
+            text-align: center; 
+            font-size: 3.5rem; 
             margin-bottom: 1.5rem; 
-            color: var(--text-color); /* 改：使用文字颜色变量 */
-            line-height: 1.2; 
+            color: var(--text-color);
+            line-height: 1.1; 
+            letter-spacing: -1px;
         }
-        
-        .subtitle { 
+
+
+        header:nth-of-type(2) .subtitle { 
+            text-align: center; 
             font-size: 1.25rem; 
-            color: var(--text-color); 
-            opacity: 0.8; /* 稍微淡一点，作为副标题 */
+            color: var(--text-secondary); 
             max-width: 600px; 
-            margin-bottom: 2.5rem; 
+            margin-bottom: 3rem; 
+            line-height: 1.6;
         }
+
         
         /* CTA 按钮 */
         .cta-button { 
-            background-color: var(--accent-color); /* 改：使用强调色 */
-            color: white; /* 按钮字保持白色 */
+            background-color: var(--primary-color);
+            color: white; 
             padding: 15px 40px; 
             border-radius: 50px; 
             text-decoration: none; 
             font-weight: bold; 
             font-size: 1.1rem; 
-            transition: transform 0.2s, box-shadow 0.2s; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
-        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
+        .cta-button:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4); 
+        }
 
-        /* --- 4. 特性展示区适配 --- */
+        /* --- 3. 特性展示区 --- */
         .features { 
-            padding: 5rem 5%; 
+            padding: 4rem 5%; /* 调整内边距 */
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 2rem; 
+            gap: 2.5rem; /* 卡片间距拉大，更透气 */
             max-width: 1200px; 
             margin: 0 auto; 
+            margin-top: -2rem; /* 👈 关键修复：向上重叠一点点 Hero 区，更有层次感，或者改为 margin-top: 4rem 隔开 */
+            position: relative; /* 修正层级 */
+            z-index: 10;
         }
         
-        .feature-card { 
-            background: var(--card-bg); /* 改：卡片背景色 */
-            padding: 2rem; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+        /* 修正特性卡片样式 (直接用 class="card") */
+        .card.feature-card { 
+            background: var(--card-bg);
+            padding: 2.5rem; 
+            border-radius: 16px; /* 更圆润 */
+            box-shadow: var(--shadow-md); 
             text-align: center; 
-            transition: transform 0.3s, background-color 0.3s ease;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color); /* 增加边框增加精致感 */
         }
-        .feature-card:hover { transform: translateY(-5px); }
+        .card.feature-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
         
-        .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .icon { font-size: 3rem; margin-bottom: 1.5rem; display: block; }
         
         .feature-title { 
-            font-size: 1.25rem; 
-            font-weight: bold; 
-            margin-bottom: 0.5rem; 
-            color: var(--text-color); /* 改 */
+            font-size: 1.4rem; 
+            font-weight: 700; 
+            margin-bottom: 1rem; 
+            color: var(--text-color);
         }
         
         .feature-desc { 
-            color: var(--text-color); 
-            opacity: 0.7; /* 改：稍微透明一点，不抢眼 */
+            color: var(--text-secondary); 
+            line-height: 1.7;
+            font-size: 1rem;
         }
 
-        /* --- 5. 博客 & 个人简介适配 --- */
-        .container { max-width: 1000px; margin: 0 auto; padding: 4rem 20px; }
-        .section-title { text-align: center; font-size: 2rem; margin-bottom: 3rem; color: var(--text-color); }
-
-        .about-blog-wrapper { display: flex; gap: 4rem; align-items: flex-start; }
+        /* --- 4. 博客 & 个人简介 (核心修复区) --- */
+        .container { 
+            max-width: 1200px; /* 容器加宽，防止挤压 */
+            margin: 0 auto; 
+            padding: 5rem 20px; 
+        }
         
-        .profile-card { 
-            flex: 1; 
+        .section-title { 
             text-align: center; 
-            background: var(--card-bg); /* 改 */
+            font-size: 2.5rem; 
+            margin-bottom: 4rem; 
+            color: var(--text-color);
+            position: relative;
+        }
+
+        /* 修复布局：Flexbox */
+        .about-blog-wrapper { 
+            display: flex; 
+            gap: 3rem; /* 左右间距 */
+            align-items: flex-start; /* 顶部对齐 */
+            justify-content: center;
+        }
+        
+        /* 左侧：个人卡片 */
+        .card.profile-card { 
+            flex: 0 0 320px; /* 👈 关键修复：强制固定宽度 320px，不再伸缩，防止挤压右侧 */
+            text-align: center; 
+            background: var(--card-bg);
+            padding: 2.5rem; 
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            position: sticky; /* 增加吸顶效果 */
+            top: 100px;
+        }
+        
+        /* 右侧：博客列表 */
+        .blog-section { 
+            flex: 1; /* 👈 关键修复：占据剩余所有空间 */
+            min-width: 0; /* 防止内容溢出 */
+        }
+        
+        /* 文章卡片 */
+        .card.post-item { 
+            background: var(--card-bg);
             padding: 2rem; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-            transition: background-color 0.3s;
+            border-radius: 16px;
+            margin-bottom: 2rem; /* 👈 文章间距拉大 */
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
-        .blog-section { flex: 2; }
-        
-        .post-item { 
-            background: var(--card-bg); /* 改 */
-            padding: 1.5rem; 
-            border-radius: 8px; 
-            margin-bottom: 1.5rem; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03); 
-            transition: transform 0.2s, background-color 0.3s;
+        .card.post-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+        .post-date { 
+            font-size: 0.9rem; 
+            color: var(--primary-color); 
+            font-weight: 600;
+            margin-bottom: 0.8rem; 
+            display: block; 
         }
-        
-        .post-date { font-size: 0.85rem; color: var(--text-color); opacity: 0.5; margin-bottom: 0.5rem; display: block; }
-        .post-title { font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-color); }
-        .post-excerpt { color: var(--text-color); opacity: 0.8; font-size: 0.95rem; line-height: 1.6; }
-        .read-more { color: var(--accent-color); text-decoration: none; font-weight: 500; font-size: 0.9rem; display: inline-block; margin-top: 0.5rem; }
+        .post-title { 
+            font-size: 1.5rem; 
+            margin-bottom: 1rem; 
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+        .post-excerpt { 
+            color: var(--text-secondary); 
+            font-size: 1.05rem; 
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        .read-more { 
+            color: var(--primary-color); 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 1rem; 
+            display: inline-block; 
+            margin-top: 0.5rem; 
+        }
         .read-more:hover { text-decoration: underline; }
 
         /* 页脚 */
-        footer { text-align: center; padding: 2rem; background: var(--card-bg); margin-top: 4rem; color: var(--text-color); opacity: 0.6; font-size: 0.9rem; transition: background-color 0.3s; }
+        footer { 
+            text-align: center; 
+            padding: 3rem; 
+            background: var(--card-bg); 
+            margin-top: 6rem; /* 上方留白 */
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary); 
+            font-size: 0.9rem; 
+        }
 
-        /* --- 手机端适配 (保持不变) --- */
-        @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
-            header { padding: 4rem 20px; }
-            .about-blog-wrapper { flex-direction: column; }
+        /* --- 手机端适配 (堆叠布局) --- */
+        @media (max-width: 900px) { /* 稍微提高断点，防止中间尺寸布局错乱 */
+            .about-blog-wrapper { 
+                flex-direction: column; /* 变成垂直排列 */
+            }
+            .card.profile-card { 
+                flex: none; /* 取消固定宽度 */
+                width: 100%; /* 占满全宽 */
+                max-width: 500px; /* 但限制最大宽 */
+                margin: 0 auto 3rem auto; /* 居中 */
+                position: static; /* 取消吸顶 */
+            }
+            
+            .hero-section h1 { font-size: 2.5rem; }
+            .hero-section { padding: 3rem 20px; }
+            .features { grid-template-columns: 1fr; } /* 单列显示 */
         }
     </style>
 
 </head>
+
 <body>
 
-    <!-- 顶部导航 -->
+    <!-- 1. 顶部统一导航栏 -->
     <header>
-        <!-- Logo区域 (为了让 space-between 生效，必须要两样东西) -->
+        <header class="site-nav">
         <div class="logo">My Website</div> 
-        
-        <!-- 链接区域 -->
         <div class="nav-links">
-            <a href="index.html">首页</a>
+            <a href="index.html" style="color: var(--primary-color); font-weight: bold;">首页</a>
             <a href="game.html">游戏</a>
             <a href="design.html">设计</a>
             <a href="blog.html">日志</a>
-            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
-                🌙 模式
-            </button>
+            
+            <button id="themeToggle" class="nav-btn">🌙 模式</button>
         </div>
     </header>
 
-    <!-- 核心标题区 -->
-    <header>
-        <h1>代码 & 设计<br>创造无限可能</h1>
+    <!-- 2. Hero 区域 (核心标题区) -->
+    <header class="hero-section">
+        <h1 class="hero-title">代码 & 设计<br><span style="color: var(--primary-color)">创造无限可能</span></h1>
         <p class="subtitle">欢迎来到我的数字花园。这里收录我的小游戏、UI设计作品以及编程路上的思考。</p>
         <a href="#" class="cta-button">立即开始 - 免费试用</a>
     </header>
 
-    <!-- 特性卡片区 -->
+    <!-- 3. 特性展示区 -->
     <section class="features">
-        <div class="feature-card">
+        <div class="card feature-card">
             <div class="icon">🎮</div>
             <div class="feature-title">Web 小游戏</div>
             <div class="feature-desc">我开发的 HTML5 游戏集合。无聊的时候来玩一把，或者直接拿源码去学习。</div>
         </div>
-        <div class="feature-card">
+        <div class="card feature-card">
             <div class="icon">🎨</div>
             <div class="feature-title">设计工坊</div>
             <div class="feature-desc">展示我的 UI/UX 设计作品、海报创意以及 Figma 设计源文件的分享。</div>
         </div>
-        <div class="feature-card">
+        <div class="card feature-card">
             <div class="icon">💎</div>
             <div class="feature-title">资源 & 合作</div>
             <div class="feature-desc">精选的程序员必备工具推荐，以及承接网站开发、定制设计的服务入口。</div>
         </div>
     </section>
 
-    <!-- 关于我 & 博客板块 -->
+    <!-- 4. 关于我 & 博客板块 -->
     <section class="container">
         <h2 class="section-title">关于我 & 日志</h2>
         
         <div class="about-blog-wrapper">
             <!-- 左侧：个人简介 -->
-            <div class="profile-card">
-                <!-- 这里的图片是一个随机生成的头像，你可以换成你自己的照片链接 -->
-                <img src="E:\my-first-web\images\avatar.jpg" alt="Avatar" class="avatar">
-                <div class="profile-name">Feng</div>
-                <p class="profile-bio">全栈开发练习生 | 游戏爱好者 | 终身学习者</p>
-                <p style="font-size: 0.9rem; color: #555;">
+            <div class="card profile-card">
+                <!-- 修复：使用相对路径，确保图片能显示 -->
+                <img src="images/avatar.jpg" alt="Avatar" class="avatar" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                <div class="profile-name" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Feng</div>
+                <p class="profile-bio" style="color: var(--primary-color); margin-bottom: 1rem;">全栈开发练习生 | 游戏爱好者 | 终身学习者</p>
+                <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
                     这里是我的数字花园。我热衷于用代码构建有趣的工具，用设计描绘未来的模样。欢迎通过博客了解我的最新动态！
                 </p>
             </div>
@@ -207,7 +286,7 @@
             <div class="blog-section">
                 
                 <!-- 文章 1 -->
-                <article class="post-item">
+                <article class="card post-item">
                     <span class="post-date">2023-10-27</span>
                     <h3 class="post-title">我为什么要建立这个个人网站？</h3>
                     <p class="post-excerpt">
@@ -217,7 +296,7 @@
                 </article>
 
                 <!-- 文章 2 (占位) -->
-                <article class="post-item">
+                <article class="card post-item">
                     <span class="post-date">2023-10-26</span>
                     <h3 class="post-title">Hello World：我的编程之路开始了</h3>
                     <p class="post-excerpt">
@@ -230,46 +309,41 @@
         </div>
     </section>
 
-    <!-- 页脚 -->
+    <!-- 5. 页脚 -->
     <footer>
         &copy; 2023 MyBrand Inc. 保留所有权利.
     </footer>
 
-        <script>
+    <!-- 6. 主题切换脚本 (通用版) -->
+    <script>
         const toggleBtn = document.getElementById('themeToggle');
         const htmlEl = document.documentElement;
 
-        // 👇 1. 初始化：读取存储的主题 (注意键名改为 'theme'，与博客保持一致)
+        // 1. 初始化：读取存储的主题
         const savedTheme = localStorage.getItem('theme') || 'light';
         htmlEl.setAttribute('data-theme', savedTheme);
 
-        // 👇 2. 根据当前主题设置按钮文字
-        if (savedTheme === 'dark') {
-            toggleBtn.innerText = "☀️ 模式"; // 亮起来
-        } else {
-            toggleBtn.innerText = "🌙 模式"; // 变暗
-        }
+        // 2. 根据当前主题设置按钮文字
+        toggleBtn.textContent = savedTheme === 'light' ? "🌙 模式" : "☀️ 模式";
 
-        // 👇 3. 绑定点击事件
+        // 3. 绑定点击事件
         if (toggleBtn) { 
             toggleBtn.addEventListener('click', () => {
-                // 获取当前的 data-theme 属性值
                 const currentTheme = htmlEl.getAttribute('data-theme');
-                // 切换逻辑
                 const newTheme = currentTheme === 'light' ? 'dark' : 'light';
                 
                 // 应用新的 data-theme 属性
                 htmlEl.setAttribute('data-theme', newTheme);
                 
-                // 保存到本地存储 (键名统一为 'theme')
+                // 保存到本地存储
                 localStorage.setItem('theme', newTheme);
                 
                 // 更新按钮文字
-                toggleBtn.innerText = newTheme === 'light' ? "🌙 模式" : "☀️ 模式";
+                toggleBtn.textContent = newTheme === 'light' ? "🌙 模式" : "☀️ 模式";
             });
         }
     </script>
 
-
 </body>
+
 </html>

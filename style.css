@@ -1,63 +1,315 @@
-/* --- 全站通用地基 --- */
+/* ========================
+   全站通用样式
+   ======================== */
 
-/* 🌟 CSS 变量定义（暗黑模式核心） */
+/* --- 1. 颜色变量 (在这里换主题) --- */
 :root {
-    /* 白天模式 */
+    --primary-color: #6366f1; /* 主题色：现代紫 */
+    --primary-hover: #4f46e5;
+    
+    /* 亮色模式 */
     --bg-color: #f8fafc;
-    --text-color: #334155;
     --card-bg: #ffffff;
-    --accent-color: #0ea5e9;
-    --nav-bg: #ffffff;
+    --text-color: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --input-bg: #f1f5f9;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* 夜间模式 */
+/* 暗色模式 (后续可以配合 JS 切换) */
 [data-theme="dark"] {
+    --primary-color: #818cf8;
+    --primary-hover: #6366f1;
+    
     --bg-color: #0f172a;
-    --text-color: #f1f5f9;
     --card-bg: #1e293b;
-    --accent-color: #38bdf8;
-    --nav-bg: #1e293b;
+    --text-color: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --input-bg: #334155;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 }
 
-/* 全局 Body 样式 */
+/* --- 2. 基础重置 --- */
 body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
     background-color: var(--bg-color);
     color: var(--text-color);
+    min-height: 100vh;
+    padding-top: 80px; /* 给固定头部留空间 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
-    line-height: 1.6;
+    margin: 0;
 }
 
-/* 导航栏通用样式 */
-header {
-    background-color: var(--nav-bg);
-    padding: 1rem 2rem;
+a { text-decoration: none; color: inherit; transition: color 0.2s; }
+a:hover { color: var(--primary-color); }
+button { font-family: inherit; }
+
+/* --- 3. 顶部导航 (所有页面通用) --- */
+/* 👇 只要是导航栏才用这些样式 */
+header.site-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+    z-index: 100;
+    transition: background 0.3s;
+}
+
+[data-theme="dark"] header.site-nav {
+    background: rgba(30, 41, 59, 0.8);
+}
+
+
+.logo { font-size: 1.25rem; font-weight: 800; color: var(--text-color); }
+.nav-links { display: flex; align-items: center; gap: 20px; }
+.nav-links a { font-weight: 500; color: var(--text-secondary); font-size: 0.95rem; }
+.nav-links a:hover { color: var(--primary-color); }
+
+/* 通用导航按钮 */
+.nav-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+.nav-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+/* --- 4. 布局容器 --- */
+.container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+
+/* --- 5. 通用卡片样式 (适用于游戏、设计介绍等) --- */
+.card {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+h1, h2, h3 { margin-top: 0; color: var(--text-color); }
+h1 { font-size: 2rem; margin-bottom: 1rem; }
+h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+
+/* --- 6. 博客特有样式 (仅 Blog 页面使用) --- */
+.editor-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+.editor-title { margin: 0 0 1rem 0; font-size: 1.1rem; font-weight: 700; }
+
+#postInput {
+    width: 100%;
+    min-height: 120px;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 2px solid var(--input-bg);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box; /* 确保padding不撑大宽度 */
+}
+#postInput:focus { border-color: var(--primary-color); background-color: var(--card-bg); }
+
+.publish-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    float: right;
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+    transition: transform 0.1s, box-shadow 0.2s;
+}
+.publish-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 8px -1px rgba(99, 102, 241, 0.4); }
+
+/* 图片上传 */
+.image-uploader { margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+.upload-btn {
+    background-color: var(--input-bg);
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border: 1px dashed var(--border-color);
+    transition: all 0.2s;
+}
+.upload-btn:hover { color: var(--primary-color); border-color: var(--primary-color); }
+.upload-hint { font-size: 0.8rem; color: var(--text-secondary); opacity: 0.7; }
+#previewContainer { margin-top: 10px; position: relative; display: none; }
+#imagePreview { max-height: 250px; border-radius: 8px; display: block; box-shadow: var(--shadow-sm); }
+#removeImageBtn {
+    position: absolute; top: 5px; right: 5px;
+    background: rgba(0,0,0,0.6); color: white;
+    border: none; padding: 4px 8px; border-radius: 4px;
+    cursor: pointer; font-size: 0.75rem;
+}
+
+.post-list { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.post-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.post-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    /*position: sticky; /* 让导航栏吸顶 */
-    /*top: 0;*/
-    /*z-index: 100; /* 确保导航栏在内容上方 */
-    transition: background-color 0.3s ease;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
 }
-
-/* 导航链接样式 */
-header a {
+.post-content {
+    font-size: 1rem;
+    line-height: 1.7;
     color: var(--text-color);
-    text-decoration: none;
-    margin-left: 20px;
-    font-weight: bold;
-    transition: color 0.3s ease;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
-header a:hover {
-    color: var(--accent-color);
+.post-content img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 1rem;
+    display: block;
+    box-shadow: var(--shadow-md);
 }
 
-/* 按钮通用样式 */
-button {
-    cursor: pointer;
-    font-family: inherit;
+.delete-btn {
+    background: none; border: none; color: #ef4444; cursor: pointer;
+    font-size: 0.8rem; font-weight: 600; padding: 4px 8px; border-radius: 4px;
+    opacity: 0; transition: all 0.2s;
 }
+.post-card:hover .delete-btn { opacity: 1; }
+.delete-btn:hover { background: rgba(239, 68, 68, 0.1); }
+
+/* --- 7. 登录/注册 弹窗 --- */
+#authPanel {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-box {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 20px;
+    width: 360px;
+    max-width: 90%;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.auth-tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.auth-tab {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-secondary);
+    position: relative;
+    transition: color 0.3s;
+}
+.auth-tab.active { color: var(--primary-color); }
+.auth-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--primary-color);
+}
+
+.form-group { margin-bottom: 1.2rem; }
+.form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-secondary); }
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+.btn-login { background: var(--primary-color); color: white; }
+.btn-login:hover { background: var(--primary-hover); }
+.btn-register { background: #10b981; color: white; }
+.btn-register:hover { background: #059669; }
+
+.btn-close {
+    width: 100%; padding: 8px;
+    background: transparent; border: 1px solid var(--border-color);
+    color: var(--text-secondary); border-radius: 8px; cursor: pointer;
+}
+.btn-close:hover { background: var(--input-bg); color: var(--text-color); }

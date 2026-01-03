@@ -12,7 +12,6 @@
         /* --- 2. Body (注意：删掉了 background 和 color，交给 style.css 管) --- */
         body {
             font-family: 'Segoe UI', sans-serif;           
-            padding: 2rem;
         }
 
         /* --- 3. 标题样式 (使用变量) --- */
@@ -34,13 +33,20 @@
 
         /* --- 5. 卡片样式 (关键：使用变量) --- */
         .card {
-            background: var(--card-bg); /* 改：使用卡片变量 */
+            background: var(--card-bg); 
             border-radius: 12px;
+            border: 1px solid var(--border-color); /* 👈 新增：精致边框 */
             overflow: hidden; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* 加上背景过渡 */
+            box-shadow: var(--shadow-md); /* 👈 修改：使用统一阴影变量 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
             cursor: pointer;
         }
+
+        .card:hover {
+            transform: translateY(-5px); 
+            box-shadow: var(--shadow-lg); /* 👈 修改：悬停阴影更深 */
+        }
+
 
         .card:hover {
             transform: translateY(-10px); 
@@ -80,21 +86,19 @@
 <body>
 
     <!-- 顶部导航 -->
-    <header>
-        <!-- Logo区域 (为了让 space-between 生效，必须要两样东西) -->
-        <div class="logo">My Website</div> 
-        
-        <!-- 链接区域 -->
+        <!-- 顶部统一导航 -->
+    <header class="site-nav">
+        <div class="logo">My Website</div>
         <div class="nav-links">
             <a href="index.html">首页</a>
             <a href="game.html">游戏</a>
-            <a href="design.html">设计</a>
+            <a href="design.html" style="color: var(--primary-color);">设计</a>
             <a href="blog.html">日志</a>
-            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
-                🌙 模式
-            </button>
+            <!-- 导航按钮：去掉了内联样式，使用 class -->
+            <button id="themeToggle" class="nav-btn">🌙 模式</button>
         </div>
     </header>
+
 
     <header>
         <h1>我的设计作品</h1>

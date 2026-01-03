@@ -31,18 +31,25 @@
         .nav-links a:hover { color: var(--accent-color); } /* 👇 修改 */
         
         /* --- 4. 文章内容容器 --- */
-        .article-container { max-width: 800px; margin: 3rem auto; padding: 0 20px; }
+        .article-container { 
+            max-width: 800px; 
+            margin: 30px auto 3rem auto; 
+            padding: 0 20px; 
+        }
+
         .article-header { text-align: center; margin-bottom: 2rem; }
         .article-date { color: var(--text-color); opacity: 0.6; font-size: 0.9rem; } /* 👇 修改 */
         .article-title { font-size: 2rem; margin: 1rem 0; color: var(--text-color); } /* 👇 修改 */
         
         .article-content { 
-            background: var(--card-bg); /* 👇 修改：卡片背景 */
-            padding: 2.5rem; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-            transition: background-color 0.3s ease; /* 加个过渡动画 */
+        background: var(--card-bg);
+        padding: 3rem; /* 👈 稍微加大内边距，阅读更舒适 */
+        border-radius: 16px; /* 👈 更圆润 */
+        border: 1px solid var(--border-color); /* 👈 新增：精致边框 */
+        box-shadow: var(--shadow-md); /* 👈 新增：统一阴影变量 */
+        transition: background-color 0.3s ease; 
         }
+
         
         .article-content p { margin-bottom: 1.5rem; font-size: 1.05rem; color: var(--text-color); opacity: 0.9; } /* 👇 修改 */
         .article-content h2 { margin: 2rem 0 1rem; color: var(--text-color); } /* 👇 修改 */
@@ -51,19 +58,22 @@
         .back-button { 
             display: inline-block; 
             margin: 2rem 0; 
-            padding: 10px 25px; 
-            background: var(--card-bg); /* 👇 修改：按钮背景 */
-            color: var(--text-color); /* 👇 修改：按钮文字 */
+            padding: 12px 30px; /* 稍微大一点 */
+            background: var(--bg-color); /* 背景设为网页背景色 */
+            color: var(--text-color); 
             text-decoration: none; 
-            border: 1px solid var(--text-color); /* 加个边框让它更明显 */
-            border-radius: 6px; 
-            transition: background 0.3s, color 0.3s; 
+            border: 1px solid var(--border-color); /* 边框跟随主题 */
+            border-radius: 50px; /* 胶囊形状 */
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
         .back-button:hover { 
-            background: var(--accent-color); /* 悬停变强调色 */
+            background: var(--primary-color); 
             color: white; 
-            border-color: var(--accent-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px); /* 悬停微微上浮 */
         }
+
         
         /* --- 6. 手机端适配 (保持不变) --- */
         @media (max-width: 768px) {
@@ -75,30 +85,18 @@
 </head>
 <body>
 
-    <!-- 顶部导航 -->
-    <header>
-        <!-- Logo区域 (为了让 space-between 生效，必须要两样东西) -->
-        <div class="logo">My Website</div> 
-        
-        <!-- 链接区域 -->
+        <!-- 顶部统一导航 -->
+    <header class="site-nav">
+        <div class="logo">My Website</div>
         <div class="nav-links">
             <a href="index.html">首页</a>
             <a href="game.html">游戏</a>
             <a href="design.html">设计</a>
-            <a href="blog.html">日志</a>
-            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
-                🌙 模式
-            </button>
+            <a href="blog.html" style="color: var(--primary-color);">日志</a>
+            <button id="themeToggle" class="nav-btn">🌙 模式</button>
         </div>
     </header>
 
-    <!-- 顶部导航（和首页一样，方便返回） -->
-    <nav>
-        <div class="logo">MyBrand</div>
-        <div class="nav-links">
-            <a href="index.html">返回首页</a>
-        </div>
-    </nav>
 
     <!-- 文章主体 -->
     <div class="article-container">
@@ -140,40 +138,34 @@
         <a href="index.html" class="back-button">← 返回首页</a>
     </div>
 
-        <script>
+    <script>
         const toggleBtn = document.getElementById('themeToggle');
         const htmlEl = document.documentElement;
 
-        // 👇 1. 初始化：读取存储的主题 (注意键名改为 'theme'，与博客保持一致)
+        // 1. 初始化：读取存储的主题
         const savedTheme = localStorage.getItem('theme') || 'light';
         htmlEl.setAttribute('data-theme', savedTheme);
 
-        // 👇 2. 根据当前主题设置按钮文字
+        // 2. 根据当前主题设置按钮文字
         if (savedTheme === 'dark') {
-            toggleBtn.innerText = "☀️ 模式"; // 亮起来
+            toggleBtn.innerText = "☀️ 模式";
         } else {
-            toggleBtn.innerText = "🌙 模式"; // 变暗
+            toggleBtn.innerText = "🌙 模式";
         }
 
-        // 👇 3. 绑定点击事件
+        // 3. 绑定点击事件
         if (toggleBtn) { 
             toggleBtn.addEventListener('click', () => {
-                // 获取当前的 data-theme 属性值
                 const currentTheme = htmlEl.getAttribute('data-theme');
-                // 切换逻辑
                 const newTheme = currentTheme === 'light' ? 'dark' : 'light';
                 
-                // 应用新的 data-theme 属性
                 htmlEl.setAttribute('data-theme', newTheme);
-                
-                // 保存到本地存储 (键名统一为 'theme')
                 localStorage.setItem('theme', newTheme);
-                
-                // 更新按钮文字
                 toggleBtn.innerText = newTheme === 'light' ? "🌙 模式" : "☀️ 模式";
             });
         }
     </script>
+
 
 
 </body>

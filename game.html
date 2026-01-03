@@ -23,14 +23,21 @@
         }
 
         .game-container {
-            /* 👇 修改 2：卡片背景改用变量 */
-            background: var(--card-bg);
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            /* 加个平滑过渡 */
-            transition: background-color 0.3s ease; 
+        /* 👈 新增：因为导航栏现在是悬浮的，所以内容要往下推一点，防止被遮挡 */
+        margin-top: 80px; 
+            
+        background: var(--card-bg);
+        padding:3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease; 
+            
+        /* 居中显示 */
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 600px; /* 加个最大宽度更精致 */
         }
+
 
         /* 标题颜色也用变量，或者保持强调色 */
         h1 { 
@@ -68,45 +75,79 @@
             box-shadow: 0 4px 0 var(--accent-color); /* 这里的阴影也用变量会更协调，但保持立体感可以稍微深一点，或者直接继承 */
         }
 
+                /* --- 游戏大按钮样式 --- */
+        #clickBtn {
+            /* 1. 强制使用主题色变量，防止被全局样式覆盖导致“看不见” */
+            background-color: var(--primary-color) !important; 
+            
+            /* 2. 强制文字为白色 */
+            color: #ffffff !important;
+            
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            
+            /* 增加平滑过渡，让颜色切换更丝滑 */
+            transition: transform 0.1s, background-color 0.3s, box-shadow 0.3s;
+            
+            /* 阴影使用半透明黑色，比颜色叠加更自然 */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            
+            /* 确保是块级元素，防止被压缩 */
+            display: inline-block; 
+        }
+
+        /* 悬停效果：稍微变亮 */
+        #clickBtn:hover {
+            filter: brightness(1.1);
+        }
+
+        /* 点击效果：下沉 */
         #clickBtn:active {
             transform: translateY(4px); 
             box-shadow: none;
         }
 
+        /* --- 重置按钮样式 --- */
         .reset-btn {
             margin-top: 2rem;
-            background: transparent; /* 改为透明背景 */
-            border: 1px solid var(--text-color); /* 边框用文字颜色 */
+            background: transparent !important; /* 强制透明背景 */
+            border: 1px solid var(--text-color); /* 边框跟随文字色 */
             padding: 8px 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            color: var(--text-color); /* 文字颜色 */
-            opacity: 0.7;
+            color: var(--text-color) !important; /* 文字跟随主题 */
+            opacity: 0.8;
+            transition: all 0.2s;
         }
+        
         .reset-btn:hover { 
-            background: var(--text-color); 
-            color: var(--bg-color); /* 悬停时反色 */
+            background: var(--text-color) !important; /* 悬停背景填满 */
+            color: var(--bg-color) !important; /* 文字反色 */
             opacity: 1;
+            border-color: var(--text-color);
         }
+
     </style>
 </head>
 <body>
     <!-- 顶部导航 -->
-    <header>
-        <!-- Logo区域 (为了让 space-between 生效，必须要两样东西) -->
-        <div class="logo">My Website</div> 
-        
-        <!-- 链接区域 -->
+        <!-- 顶部统一导航 -->
+    <!-- 注意：加上了 class="site-nav"，这是 style.css 里定义的磨砂玻璃导航样式 -->
+    <header class="site-nav">
+        <div class="logo">My Website</div>
         <div class="nav-links">
             <a href="index.html">首页</a>
-            <a href="game.html">游戏</a>
+            <a href="game.html" style="color: var(--primary-color);">游戏</a>
             <a href="design.html">设计</a>
             <a href="blog.html">日志</a>
-            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
-                🌙 模式
-            </button>
+            <!-- 导航按钮样式 -->
+            <button id="themeToggle" class="nav-btn">🌙 模式</button>
         </div>
     </header>
+
 
     <div class="game-container">
         <h1>🚀 极速点击挑战</h1>
@@ -227,40 +268,42 @@
         }
 
     </script>
-
+   
         <script>
+        // 1. 获取按钮和元素
         const toggleBtn = document.getElementById('themeToggle');
         const htmlEl = document.documentElement;
 
-        // 👇 1. 初始化：读取存储的主题 (注意键名改为 'theme'，与博客保持一致)
+        // 2. 初始化：读取存储的主题
         const savedTheme = localStorage.getItem('theme') || 'light';
         htmlEl.setAttribute('data-theme', savedTheme);
 
-        // 👇 2. 根据当前主题设置按钮文字
+        // 3. 根据当前主题设置按钮文字
         if (savedTheme === 'dark') {
-            toggleBtn.innerText = "☀️ 模式"; // 亮起来
+            toggleBtn.innerText = "☀️ 模式";
         } else {
-            toggleBtn.innerText = "🌙 模式"; // 变暗
+            toggleBtn.innerText = "🌙 模式";
         }
 
-        // 👇 3. 绑定点击事件
+        // 4. 绑定点击事件
         if (toggleBtn) { 
             toggleBtn.addEventListener('click', () => {
-                // 获取当前的 data-theme 属性值
                 const currentTheme = htmlEl.getAttribute('data-theme');
-                // 切换逻辑
                 const newTheme = currentTheme === 'light' ? 'dark' : 'light';
                 
                 // 应用新的 data-theme 属性
                 htmlEl.setAttribute('data-theme', newTheme);
                 
-                // 保存到本地存储 (键名统一为 'theme')
+                // 保存到本地存储
                 localStorage.setItem('theme', newTheme);
                 
                 // 更新按钮文字
                 toggleBtn.innerText = newTheme === 'light' ? "🌙 模式" : "☀️ 模式";
             });
         }
+        
+        // --- 以下是游戏原有的逻辑，保持不变 ---
+        // ... (你的点击计分代码等)
     </script>
 
 

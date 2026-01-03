@@ -6,207 +6,383 @@
     <link rel="stylesheet" href="style.css">
 
     <title>我的博客日志</title>
-    <style>
-        /* --- 1. 页面基础布局 --- */
+        <style>
+        /* --- 1. 全局变量定义 (配色系统) --- */
+        :root {
+            --primary-color: #6366f1; /* 现代紫 */
+            --primary-hover: #4f46e5;
+            
+            /* 亮色模式 */
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --input-bg: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 暗色模式 (自动覆盖) */
+        [data-theme="dark"] {
+            --primary-color: #818cf8;
+            --primary-hover: #6366f1;
+            
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #334155;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- 2. 基础重置 --- */
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
-            padding-top: 2rem;
+            padding-top: 80px; /* 给固定头部留空间 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        a { text-decoration: none; color: inherit; transition: color 0.2s; }
+        a:hover { color: var(--primary-color); }
+        button { font-family: inherit; }
 
-        /* --- 2. 编辑器样式 (发帖框) --- */
-        .editor-card {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 3rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .editor-title {
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-            color: var(--text-color);
+        /* --- 3. 顶部导航 (磨砂玻璃效果) --- */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.8); /* 亮色模式半透明 */
+            backdrop-filter: blur(10px); /* 磨砂效果 */
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
+            padding: 0 5%;
+            z-index: 100;
+            transition: background 0.3s;
         }
 
+        [data-theme="dark"] header {
+            background: rgba(30, 41, 59, 0.8); /* 暗色模式半透明 */
+        }
+
+        .logo { font-size: 1.25rem; font-weight: 800; color: var(--text-color); }
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+        .nav-links a { font-weight: 500; color: var(--text-secondary); }
+        .nav-links a:hover { color: var(--primary-color); }
+
+        /* 导航栏按钮 */
+        .nav-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        /* --- 4. 布局容器 --- */
+        .container { max-width: 700px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- 5. 编辑器卡片 --- */
+        .editor-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .editor-card:focus-within {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .editor-title { margin: 0 0 1rem 0; font-size: 1.1rem; font-weight: 700; color: var(--text-color); }
+
+        /* 文本域 */
         #postInput {
             width: 100%;
-            height: 150px;
+            min-height: 120px;
             padding: 1rem;
-            border-radius: 8px;
-            border: 2px solid var(--text-color);
-            background-color: var(--bg-color);
+            border-radius: 12px;
+            border: 2px solid var(--input-bg);
+            background-color: var(--input-bg);
             color: var(--text-color);
             font-size: 1rem;
-            font-family: inherit;
+            line-height: 1.6;
             resize: vertical;
-            margin-bottom: 1rem;
             outline: none;
-            opacity: 0.9;
+            transition: border-color 0.2s;
         }
+        #postInput:focus { border-color: var(--primary-color); background-color: var(--card-bg); }
 
-        #postInput:focus {
-            opacity: 1;
-            border-color: var(--accent-color);
-        }
-
+        /* 发布按钮 */
         .publish-btn {
-            background-color: var(--accent-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
             border: none;
-            padding: 10px 25px;
-            border-radius: 6px;
-            font-size: 1rem;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
             float: right;
-            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+            transition: transform 0.1s, box-shadow 0.2s;
         }
-        .publish-btn:hover {
-            filter: brightness(1.1);
-        }
-        .publish-btn:active {
-            transform: scale(0.98);
-        }
+        .publish-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 8px -1px rgba(99, 102, 241, 0.4); }
+        .publish-btn:active { transform: translateY(0); }
 
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
+        /* 图片上传区域 */
+        .image-uploader { margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+        .upload-btn {
+            background-color: var(--input-bg);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            border: 1px dashed var(--border-color);
+            transition: all 0.2s;
         }
+        .upload-btn:hover { color: var(--primary-color); border-color: var(--primary-color); }
+        
+        .upload-hint { font-size: 0.8rem; color: var(--text-secondary); opacity: 0.7; }
+        
+        #previewContainer { margin-top: 10px; position: relative; display: none; }
+        #imagePreview { max-height: 250px; border-radius: 8px; display: block; box-shadow: var(--shadow-sm); }
+        #removeImageBtn {
+            position: absolute; top: 5px; right: 5px;
+            background: rgba(0,0,0,0.6); color: white;
+            border: none; padding: 4px 8px; border-radius: 4px;
+            cursor: pointer; font-size: 0.75rem;
+        }
+        #removeImageBtn:hover { background: rgba(0,0,0,0.8); }
 
-        /* --- 3. 帖子列表样式 --- */
-        .post-list {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
+        /* --- 6. 帖子列表 --- */
+        .post-list { display: flex; flex-direction: column; gap: 1.5rem; }
 
         .post-card {
             background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--accent-color);
-            animation: slideIn 0.3s ease-out;
-            transition: background-color 0.3s ease;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+        .post-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .post-meta {
-            font-size: 0.85rem;
-            color: var(--text-color);
-            opacity: 0.6;
-            margin-bottom: 0.8rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
         }
 
         .post-content {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            white-space: pre-wrap; 
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-color);
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-        
+
         .post-content img {
             max-width: 100%;
-            border-radius: 8px;
-            margin-top: 10px;
+            border-radius: 12px;
+            margin-top: 1rem;
             display: block;
+            box-shadow: var(--shadow-md);
         }
-        
+
+        /* 删除按钮 */
         .delete-btn {
             background: none;
             border: none;
             color: #ef4444;
             cursor: pointer;
             font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
         }
-        .post-card:hover .delete-btn {
-            opacity: 1;
-        }
+        .post-card:hover .delete-btn { opacity: 1; }
+        .delete-btn:hover { background: rgba(239, 68, 68, 0.1); }
 
-        .image-uploader {
-            margin-bottom: 1rem;
-            display: flex;
+        /* --- 7. 登录/注册 弹窗 --- */
+            /* --- 7. 登录/注册 弹窗 --- */
+        #authPanel {
+            /* 默认隐藏 */
+            display: none; 
+            
+            /* 👇 关键修复：强制固定定位，占满全屏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            
+            /* 居中内容 */
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+
+            /* 背景磨砂效果 */
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+    
+
+        .auth-box {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 360px;
+            max-width: 90%;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .upload-btn {
-            background-color: var(--bg-color);
-            border: 1px dashed var(--text-color);
-            color: var(--text-color);
-            padding: 8px 15px;
-            border-radius: 6px;
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
             cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .upload-btn:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
+            font-weight: 600;
+            color: var(--text-secondary);
+            position: relative;
+            transition: color 0.3s;
         }
 
-        .upload-hint {
-            font-size: 0.8rem;
-            opacity: 0.5;
+        .auth-tab.active { color: var(--primary-color); }
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; right: 0;
+            height: 2px;
+            background: var(--primary-color);
         }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-secondary); }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            box-sizing: border-box; /* 确保padding不撑大宽度 */
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-login { background: var(--primary-color); color: white; }
+        .btn-login:hover { background: var(--primary-hover); }
+        
+        .btn-register { background: #10b981; color: white; } /* 绿色 */
+        .btn-register:hover { background: #059669; }
+
+        .btn-close {
+            width: 100%;
+            padding: 8px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn-close:hover { background: var(--input-bg); color: var(--text-color); }
+
     </style>
+
 </head>
 <body>
 
-    <!-- 顶部导航 -->
+    <!-- 顶部导航 (磨砂玻璃质感) -->
     <header>
         <div class="logo">My Website</div>
         <div class="nav-links">
             <a href="index.html">首页</a>
             <a href="game.html">游戏</a>
             <a href="design.html">设计</a>
-            <a href="blog.html" style="color: var(--accent-color);">日志</a>
+            <a href="blog.html">日志</a>
             
-            <!-- 新增：登录按钮 -->
-            <button id="authBtn" style="margin-left: 20px; padding: 5px 15px; border-radius: 5px; border: 1px solid #ccc; background: var(--card-bg); color: var(--text-color); cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                🔑 登录
-            </button>
+            <button id="authBtn" class="nav-btn">🔑 登录</button>
             
-            <button id="themeToggle" style="margin-left: 10px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
-                🌙 模式
-            </button>
+            <button id="themeToggle" class="nav-btn">🌙 模式</button>
         </div>
     </header>
 
     <div class="container">
         
-        <!-- 编辑器区域 -->
-        <div class="editor-card" id="editorCard" style="display: none;">
+        <!-- 编辑器区域 (默认隐藏，登录后显示) -->
+        <div class="editor-card hidden" id="editorCard">
             <h2 class="editor-title">✍️ 写点什么呢？</h2>
             
+            <!-- 图片上传 -->
             <div class="image-uploader">
                 <input type="file" id="imageInput" accept="image/*" style="display: none;">
                 <button type="button" class="upload-btn" onclick="document.getElementById('imageInput').click()">
                     📷 添加图片
                 </button>
-                <span class="upload-hint"> (仅支持小图片，建议小于 500KB)</span>
+                <span class="upload-hint"> (建议小于 500KB)</span>
                 
-                <div id="previewContainer" style="margin-top: 10px; display: none;">
-                    <img id="imagePreview" src="" style="max-height: 200px; border-radius: 8px; display: block;">
-                    <button type="button" id="removeImageBtn" style="color: red; background: none; border: none; cursor: pointer; font-size: 0.9rem;">移除图片</button>
+                <div id="previewContainer">
+                    <img id="imagePreview" src="">
+                    <button type="button" id="removeImageBtn">✕</button>
                 </div>
             </div>
 
@@ -224,47 +400,47 @@
 
     </div>
 
-    <!-- 👇 登录/注册 面板 (默认隐藏) -->
-    <div id="authPanel" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center;">
-        <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; width: 320px; max-width: 90%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); color: var(--text-color);">
+    <!-- 登录/注册 面板 (精美弹窗) -->
+    <div id="authPanel" class="hidden">
+        <div class="auth-box">
             
-            <!-- 顶部切换按钮 -->
-            <div style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd;">
-                <button id="tabLogin" style="flex: 1; padding: 10px; background: transparent; border: none; border-bottom: 2px solid var(--accent-color); cursor: pointer; font-weight: bold; color: var(--text-color);">登录</button>
-                <button id="tabRegister" style="flex: 1; padding: 10px; background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--text-color);">注册</button>
+            <!-- 顶部 Tab -->
+            <div class="auth-tabs">
+                <button id="tabLogin" class="auth-tab active">登录</button>
+                <button id="tabRegister" class="auth-tab">注册</button>
             </div>
 
             <!-- 登录表单 -->
             <div id="formLogin">
-                <div style="margin-bottom: 10px;">
-                    <label style="display:block; margin-bottom: 4px;">邮箱</label>
-                    <input type="email" id="loginEmail" placeholder="your@email.com" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                <div class="form-group">
+                    <label>邮箱</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com">
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display:block; margin-bottom: 4px;">密码</label>
-                    <input type="password" id="loginPassword" placeholder="********" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="********">
                 </div>
-                <button id="btnSubmitLogin" style="width: 100%; padding: 10px; border-radius: 6px; border:none; background: var(--accent-color); color: white; cursor: pointer;">立即登录</button>
+                <button id="btnSubmitLogin" class="auth-btn btn-login">立即登录</button>
             </div>
 
-            <!-- 注册表单 (默认隐藏) -->
+            <!-- 注册表单 -->
             <div id="formRegister" style="display: none;">
-                <div style="margin-bottom: 10px;">
-                    <label style="display:block; margin-bottom: 4px;">邮箱</label>
-                    <input type="email" id="regEmail" placeholder="your@email.com" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                <div class="form-group">
+                    <label>邮箱</label>
+                    <input type="email" id="regEmail" class="form-input" placeholder="your@email.com">
                 </div>
-                <div style="margin-bottom: 10px;">
-                    <label style="display:block; margin-bottom: 4px;">密码 (至少6位)</label>
-                    <input type="password" id="regPassword" placeholder="设置密码" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                <div class="form-group">
+                    <label>密码 (至少6位)</label>
+                    <input type="password" id="regPassword" class="form-input" placeholder="设置密码">
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display:block; margin-bottom: 4px;">确认密码</label>
-                    <input type="password" id="regConfirmPassword" placeholder="再次输入密码" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" id="regConfirmPassword" class="form-input" placeholder="再次输入密码">
                 </div>
-                <button id="btnSubmitRegister" style="width: 100%; padding: 10px; border-radius: 6px; border:none; background: #28a745; color: white; cursor: pointer;">注册账号</button>
+                <button id="btnSubmitRegister" class="auth-btn btn-register">注册账号</button>
             </div>
 
-            <button id="btnCloseAuth" style="margin-top: 15px; width: 100%; padding: 5px; background: #ddd; border: none; border-radius: 4px; cursor: pointer; color: #333;">关闭</button>
+            <button id="btnCloseAuth" class="btn-close">关闭</button>
         </div>
     </div>
 

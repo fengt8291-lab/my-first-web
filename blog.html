@@ -5,168 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 
-    <!-- 引入 Firebase SDK (唯一模块) -->
-    <script type="module">
-        // 👇 导入 Firebase 函数
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js" ;
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js" ;
-
-        // 读取主题设置
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-
-        // 主题切换按钮事件
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            document.getElementById('themeToggle').textContent = newTheme === 'light' ? '🌙 模式' : '☀️ 模式';
-        });
-
-
-        // 👇 你的配置 (只定义一次)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCuszDYabmpna95pemynxZp0c74zysMP-k",
-            authDomain: "my-awesome-blog-23802.firebaseapp.com",
-            databaseURL: "https://my-awesome-blog-23802-default-rtdb.firebaseio.com",
-            projectId: "my-awesome-blog-23802",
-            storageBucket: "my-awesome-blog-23802.firebasestorage.app",
-            messagingSenderId: "900231686530",
-            appId: "1:900231686530:web:4b50022f9049bfb169479b"
-        };
-
-        // 初始化 Firebase (只初始化一次)
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const postsRef = ref(db, 'posts');
-
-        // 👇 把 db 和 postsRef 暴露给全局，方便下面的非 module 脚本使用
-        window.db = db;
-        window.postsRef = postsRef;
-        window.fbPush = push;
-        window.fbRemove = remove;
-
-        // --- 业务逻辑 (合并到这里) ---
-        const postInput = document.getElementById('postInput');
-        const publishBtn = document.getElementById('publishBtn');
-        const blogList = document.getElementById('blogList');
-        const imageInput = document.getElementById('imageInput');
-        const previewContainer = document.getElementById('previewContainer');
-        const imagePreview = document.getElementById('imagePreview');
-        const removeImageBtn = document.getElementById('removeImageBtn');
-
-        let currentImageBase64 = null;
-
-        // --- 功能：图片预览 ---
-        imageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (file.size > 500 * 1024) { 
-                alert('图片请限制在 500KB 以内，防止超出 Firebase 限制！');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                currentImageBase64 = event.target.result;
-                imagePreview.src = currentImageBase64;
-                previewContainer.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        });
-
-        removeImageBtn.addEventListener('click', () => {
-            currentImageBase64 = null;
-            imageInput.value = '';
-            previewContainer.style.display = 'none';
-        });
-
-        // --- 功能：实时监听 ---
-        function listenToPosts() {
-            blogList.innerHTML = '<div style="text-align:center; padding: 20px;">🔄 正在加载...</div>';
-            onValue(postsRef, (snapshot) => {
-                const data = snapshot.val();
-                blogList.innerHTML = ''; // 清空
-
-                if (!data) {
-                    blogList.innerHTML = '<div style="text-align:center; opacity:0.5; padding: 20px;">📭 暂无日志，快来抢沙发！</div>';
-                    return;
-                }
-
-                // 转换数组并倒序
-                const postsArray = Object.entries(data).map(([key, value]) => {
-                    return { id: key, ...value };
-                }).reverse(); 
-
-                postsArray.forEach((post) => {
-                    const postCard = document.createElement('div');
-                    postCard.className = 'post-card';
-                    
-                    const imageHtml = post.image ? `<img src="${post.image}" alt="Post Image">` : '';
-
-                    postCard.innerHTML = `
-                        <div class="post-meta">
-                            <span>📅 ${post.date}</span>
-                            <button class="delete-btn" data-id="${post.id}">删除</button>
-                        </div>
-                        <div class="post-content">
-                            ${post.content}
-                            ${imageHtml}
-                        </div>
-                    `;
-                    blogList.appendChild(postCard);
-                });
-
-                // 重新绑定删除按钮事件
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const id = e.target.getAttribute('data-id');
-                        if(confirm('确定删除？')) {
-                            const postRef = ref(db, 'posts/' + id);
-                            remove(postRef);
-                        }
-                    });
-                });
-            });
-        }
-
-        // --- 功能：发布 ---
-        publishBtn.addEventListener('click', () => {
-            const content = postInput.value.trim();
-            if (!content && !currentImageBase64) {
-                alert('写点字或者传张图吧！');
-                return;
-            }
-
-            const newPost = {
-                content: content,
-                image: currentImageBase64,
-                date: new Date().toLocaleString()
-            };
-
-            // 写入数据库
-            push(postsRef, newPost)
-                .then(() => {
-                    console.log("✅ 发布成功");
-                    // 清空界面
-                    postInput.value = '';
-                    currentImageBase64 = null;
-                    previewContainer.style.display = 'none';
-                    imageInput.value = '';
-                })
-                .catch((error) => {
-                    alert("❌ 发布失败：" + error.message);
-                });
-        });
-
-        // 🚀 启动监听
-        listenToPosts();
-
-    </script>
-
     <title>我的博客日志</title>
     <style>
-        /* ... 你的 CSS 样式 (保持不变) ... */
         /* --- 1. 页面基础布局 --- */
         body {
             background-color: var(--bg-color);
@@ -282,7 +122,6 @@
             white-space: pre-wrap; 
         }
         
-        /* 👇 新增：发布的图片样式 */
         .post-content img {
             max-width: 100%;
             border-radius: 8px;
@@ -290,7 +129,6 @@
             display: block;
         }
         
-        /* 删除按钮 */
         .delete-btn {
             background: none;
             border: none;
@@ -304,7 +142,6 @@
             opacity: 1;
         }
 
-        /* 图片上传相关样式 */
         .image-uploader {
             margin-bottom: 1rem;
             display: flex;
@@ -334,7 +171,7 @@
 </head>
 <body>
 
-    <!-- 顶部导航 (复用) -->
+    <!-- 顶部导航 -->
     <header>
         <div class="logo">My Website</div>
         <div class="nav-links">
@@ -342,7 +179,13 @@
             <a href="game.html">游戏</a>
             <a href="design.html">设计</a>
             <a href="blog.html" style="color: var(--accent-color);">日志</a>
-            <button id="themeToggle" style="margin-left: 20px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
+            
+            <!-- 新增：登录按钮 -->
+            <button id="authBtn" style="margin-left: 20px; padding: 5px 15px; border-radius: 5px; border: 1px solid #ccc; background: var(--card-bg); color: var(--text-color); cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                🔑 登录
+            </button>
+            
+            <button id="themeToggle" style="margin-left: 10px; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; background: transparent; color: inherit; cursor: pointer;">
                 🌙 模式
             </button>
         </div>
@@ -350,10 +193,10 @@
 
     <div class="container">
         
-        <!-- --- 编辑器区域 --- -->
-        <div class="editor-card">
+        <!-- 编辑器区域 -->
+        <div class="editor-card" id="editorCard" style="display: none;">
             <h2 class="editor-title">✍️ 写点什么呢？</h2>
-            <!-- --- 图片上传区域 --- -->
+            
             <div class="image-uploader">
                 <input type="file" id="imageInput" accept="image/*" style="display: none;">
                 <button type="button" class="upload-btn" onclick="document.getElementById('imageInput').click()">
@@ -361,14 +204,12 @@
                 </button>
                 <span class="upload-hint"> (仅支持小图片，建议小于 500KB)</span>
                 
-                <!-- 图片预览容器 -->
                 <div id="previewContainer" style="margin-top: 10px; display: none;">
                     <img id="imagePreview" src="" style="max-height: 200px; border-radius: 8px; display: block;">
                     <button type="button" id="removeImageBtn" style="color: red; background: none; border: none; cursor: pointer; font-size: 0.9rem;">移除图片</button>
                 </div>
             </div>
 
-            <!-- 原有的文本框 -->
             <textarea id="postInput" placeholder="分享你的心情，支持 Emoji 表情哦... 🌈💻✨"></textarea>
             
             <div class="clearfix">
@@ -376,12 +217,331 @@
             </div>
         </div>
 
-        <!-- --- 帖子列表区域 --- -->
+        <!-- 帖子列表区域 -->
         <div id="blogList" class="post-list">
             <!-- 帖子会通过 JS 插入到这里 -->
         </div>
 
     </div>
+
+    <!-- 👇 登录/注册 面板 (默认隐藏) -->
+    <div id="authPanel" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center;">
+        <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; width: 320px; max-width: 90%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); color: var(--text-color);">
+            
+            <!-- 顶部切换按钮 -->
+            <div style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd;">
+                <button id="tabLogin" style="flex: 1; padding: 10px; background: transparent; border: none; border-bottom: 2px solid var(--accent-color); cursor: pointer; font-weight: bold; color: var(--text-color);">登录</button>
+                <button id="tabRegister" style="flex: 1; padding: 10px; background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--text-color);">注册</button>
+            </div>
+
+            <!-- 登录表单 -->
+            <div id="formLogin">
+                <div style="margin-bottom: 10px;">
+                    <label style="display:block; margin-bottom: 4px;">邮箱</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; margin-bottom: 4px;">密码</label>
+                    <input type="password" id="loginPassword" placeholder="********" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+                <button id="btnSubmitLogin" style="width: 100%; padding: 10px; border-radius: 6px; border:none; background: var(--accent-color); color: white; cursor: pointer;">立即登录</button>
+            </div>
+
+            <!-- 注册表单 (默认隐藏) -->
+            <div id="formRegister" style="display: none;">
+                <div style="margin-bottom: 10px;">
+                    <label style="display:block; margin-bottom: 4px;">邮箱</label>
+                    <input type="email" id="regEmail" placeholder="your@email.com" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="display:block; margin-bottom: 4px;">密码 (至少6位)</label>
+                    <input type="password" id="regPassword" placeholder="设置密码" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; margin-bottom: 4px;">确认密码</label>
+                    <input type="password" id="regConfirmPassword" placeholder="再次输入密码" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+                <button id="btnSubmitRegister" style="width: 100%; padding: 10px; border-radius: 6px; border:none; background: #28a745; color: white; cursor: pointer;">注册账号</button>
+            </div>
+
+            <button id="btnCloseAuth" style="margin-top: 15px; width: 100%; padding: 5px; background: #ddd; border: none; border-radius: 4px; cursor: pointer; color: #333;">关闭</button>
+        </div>
+    </div>
+
+    <!-- 引入 Firebase SDK -->
+    <script type="module">
+        // 👇 导入 Firebase 函数
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js" ;
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js" ;
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword,
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // 读取主题设置
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // 主题切换按钮事件
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('themeToggle').textContent = newTheme === 'light' ? '🌙 模式' : '☀️ 模式';
+        });
+
+        // 👇 你的配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuszDYabmpna95pemynxZp0c74zysMP-k",
+            authDomain: "my-awesome-blog-23802.firebaseapp.com",
+            databaseURL: "https://my-awesome-blog-23802-default-rtdb.firebaseio.com",
+            projectId: "my-awesome-blog-23802",
+            storageBucket: "my-awesome-blog-23802.firebasestorage.app",
+            messagingSenderId: "900231686530",
+            appId: "1:900231686530:web:4b50022f9049bfb169479b"
+        };
+
+        // 初始化 Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+        const postsRef = ref(db, 'posts');
+
+        // 全局暴露（兼容旧代码）
+        window.db = db;
+        window.postsRef = postsRef;
+        window.fbPush = push;
+        window.fbRemove = remove;
+        window.auth = auth;
+
+        // --- Auth UI 元素 ---
+        const authPanel = document.getElementById('authPanel');
+        const authBtn = document.getElementById('authBtn');
+        const editorCard = document.getElementById('editorCard');
+        const tabLogin = document.getElementById('tabLogin');
+        const tabRegister = document.getElementById('tabRegister');
+        const formLogin = document.getElementById('formLogin');
+        const formRegister = document.getElementById('formRegister');
+
+        // --- Tab 切换逻辑 ---
+        tabLogin.addEventListener('click', () => {
+            formLogin.style.display = 'block';
+            formRegister.style.display = 'none';
+            tabLogin.style.borderBottom = `2px solid var(--accent-color)`;
+            tabRegister.style.borderBottom = `2px solid transparent`;
+        });
+
+        tabRegister.addEventListener('click', () => {
+            formLogin.style.display = 'none';
+            formRegister.style.display = 'block';
+            tabRegister.style.borderBottom = `2px solid var(--accent-color)`;
+            tabLogin.style.borderBottom = `2px solid transparent`;
+        });
+
+        document.getElementById('btnCloseAuth').addEventListener('click', () => {
+            authPanel.style.display = 'none';
+        });
+
+        // --- 登录按钮点击 ---
+        authBtn.addEventListener('click', () => {
+            const user = auth.currentUser;
+            if (user) {
+                signOut(auth).then(() => {
+                    alert('已安全退出');
+                });
+            } else {
+                authPanel.style.display = 'flex';
+            }
+        });
+
+        // --- 注册逻辑 ---
+        const btnSubmitRegister = document.getElementById('btnSubmitRegister');
+        btnSubmitRegister.addEventListener('click', () => {
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('两次输入的密码不一致');
+                return;
+            }
+            if (password.length < 6) {
+                alert('密码长度至少需要6位');
+                return;
+            }
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert('注册成功！已自动登录');
+                    authPanel.style.display = 'none';
+                })
+                .catch((error) => {
+                    alert('注册失败: ' + error.message);
+                });
+        });
+
+        // --- 登录逻辑 ---
+        const btnSubmitLogin = document.getElementById('btnSubmitLogin');
+        btnSubmitLogin.addEventListener('click', () => {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert('登录成功');
+                    authPanel.style.display = 'none';
+                })
+                .catch((error) => {
+                    alert('登录失败: ' + error.message);
+                });
+        });
+
+        // --- 登录状态监听 ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // 已登录
+                authBtn.innerHTML = '🚪 退出';
+                editorCard.style.display = 'block';
+            } else {
+                // 未登录
+                authBtn.innerHTML = '🔑 登录';
+                editorCard.style.display = 'none';
+            }
+        });
+
+        // --- 业务逻辑 ---
+        const postInput = document.getElementById('postInput');
+        const publishBtn = document.getElementById('publishBtn');
+        const blogList = document.getElementById('blogList');
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+
+        let currentImageBase64 = null;
+
+        // --- 图片预览 ---
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 500 * 1024) { 
+                alert('图片请限制在 500KB 以内，防止超出 Firebase 限制！');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                currentImageBase64 = event.target.result;
+                imagePreview.src = currentImageBase64;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        removeImageBtn.addEventListener('click', () => {
+            currentImageBase64 = null;
+            imageInput.value = '';
+            previewContainer.style.display = 'none';
+        });
+
+        // --- 实时监听帖子 (修改版：增加权限控制) ---
+        function listenToPosts() {
+            blogList.innerHTML = '<div style="text-align:center; padding: 20px;">🔄 正在加载...</div>';
+            onValue(postsRef, (snapshot) => {
+                const data = snapshot.val();
+                blogList.innerHTML = '';
+                const currentUser = auth.currentUser; // 获取当前用户
+
+                if (!data) {
+                    blogList.innerHTML = '<div style="text-align:center; opacity:0.5; padding: 20px;">📭 暂无日志，快来抢沙发！</div>';
+                    return;
+                }
+
+                const postsArray = Object.entries(data).map(([key, value]) => {
+                    return { id: key, ...value };
+                }).reverse(); 
+
+                postsArray.forEach((post) => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+                    
+                    const imageHtml = post.image ? `<img src="${post.image}" alt="Post Image">` : '';
+                    const authorEmail = post.authorEmail || '匿名';
+                    const canDelete = currentUser && post.authorId === currentUser.uid;
+
+                    postCard.innerHTML = `
+                        <div class="post-meta">
+                            <div>
+                                <span>📅 ${post.date}</span>
+                                <span style="margin-left: 10px;">👤 ${authorEmail}</span>
+                            </div>
+                            ${canDelete ? `<button class="delete-btn" data-id="${post.id}">删除</button>` : ''}
+                        </div>
+                        <div class="post-content">
+                            ${post.content}
+                            ${imageHtml}
+                        </div>
+                    `;
+                    blogList.appendChild(postCard);
+                });
+
+                // 绑定删除按钮事件
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        if(confirm('确定删除？')) {
+                            const postRef = ref(db, 'posts/' + id);
+                            remove(postRef);
+                        }
+                    });
+                });
+            });
+        }
+
+        // --- 发布帖子 (修改版：增加作者信息) ---
+        publishBtn.addEventListener('click', () => {
+            // 检查是否登录
+            const user = auth.currentUser;
+            if (!user) {
+                alert('请先登录才能发帖！');
+                authPanel.style.display = 'flex';
+                return;
+            }
+
+            const content = postInput.value.trim();
+            if (!content && !currentImageBase64) {
+                alert('写点字或者传张图吧！');
+                return;
+            }
+
+            const newPost = {
+                content: content,
+                image: currentImageBase64,
+                date: new Date().toLocaleString(),
+                authorId: user.uid,       // 记录作者ID
+                authorEmail: user.email   // 记录作者邮箱
+            };
+
+            push(postsRef, newPost)
+                .then(() => {
+                    console.log("✅ 发布成功");
+                    postInput.value = '';
+                    currentImageBase64 = null;
+                    previewContainer.style.display = 'none';
+                    imageInput.value = '';
+                })
+                .catch((error) => {
+                    alert("❌ 发布失败：" + error.message);
+                });
+        });
+
+        // 启动监听
+        listenToPosts();
+
+    </script>
 
 </body>
 </html>

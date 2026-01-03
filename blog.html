@@ -271,8 +271,9 @@
     <!-- 引入 Firebase SDK -->
     <script type="module">
         // 👇 导入 Firebase 函数
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js" ;
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js" ;
+        // ✅ 新代码（统一版本到 10.8.0）
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js" ;
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js" ;
         import { 
             getAuth, 
             signInWithEmailAndPassword, 
